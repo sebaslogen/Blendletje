@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'me.tatarka.retrolambda'
+apply plugin: 'com.neenbedankt.android-apt'
 
 def config = rootProject.extensions.getByName("ext")
 
@@ -29,6 +30,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:${config.getAt("support_version")}"
+    compile "ch.halarious:halarious-core:${config.getAt("halarious")}"
+
+    apt "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
+    provided "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
 
     testCompile "junit:junit:${config.getAt("junit")}"
     testCompile "org.mockito:mockito-core:${config.getAt("mockito")}"

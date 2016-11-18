@@ -11,4 +11,6 @@ ext {
     espresso = '2.2.2'
     support_testrunner = '0.5'
     mockito = '1.10.19'
+    auto_value = '1.4-rc1'
+    halarious = '0.14'
 }

@@ -32,11 +32,12 @@ android:
     - sys-img-armeabi-v7a-android-22
 # Emulator Management: Create, Start and Wait
 before_script:
+  - chmod +x gradlew
   # Emulator creates a 32MB SD card file to store cucumber html/json reports
   - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a -c 32M
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
-  - sleep 90
+  - sleep 10
   - adb devices
   - adb shell input keyevent 82 &
 script:
