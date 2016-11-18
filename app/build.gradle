@@ -1,11 +1,15 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+
+def config = rootProject.extensions.getByName("ext")
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion config.getAt("compile_SDK_version")
+    buildToolsVersion config.getAt("build_tools_version")
     defaultConfig {
         applicationId "com.sebaslogen.blendletje"
-        minSdkVersion 21
-        targetSdkVersion 25
+        minSdkVersion config.getAt("min_SDK_version")
+        targetSdkVersion config.getAt("target_SDK_version")
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -16,13 +20,32 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    testCompile 'junit:junit:4.12'
+    compile "com.android.support:appcompat-v7:${config.getAt("support_version")}"
+    testCompile "junit:junit:${config.getAt("junit")}"
+    //Espresso dependencies
+    androidTestCompile("com.android.support.test:runner:${config.getAt("support_testrunner")}") {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-core:${config.getAt("espresso")}") {
+        exclude module: 'support-annotations'
+        exclude module: 'appcompat-v7'
+        exclude module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
+    }
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:${config.getAt("espresso")}") {
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'appcompat-v7'
+        exclude module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+        exclude module: 'design'
+    }
 }
