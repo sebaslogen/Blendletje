@@ -15,6 +15,5 @@
 .settings/
 .project
 local.properties
-gradle
 *.apk
 .gradletasknamecache
