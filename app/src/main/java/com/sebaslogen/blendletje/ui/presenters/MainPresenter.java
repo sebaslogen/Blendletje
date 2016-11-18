@@ -4,8 +4,8 @@ public class MainPresenter implements MainContract.UserActions {
 
     private final MainContract.ViewActions mViewActions;
 
-    public MainPresenter(MainContract.ViewActions mViewActions) {
-        this.mViewActions = mViewActions;
+    public MainPresenter(final MainContract.ViewActions viewActions) {
+        mViewActions = viewActions;
 
         mViewActions.showTitle("Hola Blendle!");
     }

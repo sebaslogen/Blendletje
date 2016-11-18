@@ -29,7 +29,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:${config.getAt("support_version")}"
+
     testCompile "junit:junit:${config.getAt("junit")}"
+    testCompile "org.mockito:mockito-core:${config.getAt("mockito")}"
+
     //Espresso dependencies
     androidTestCompile("com.android.support.test:runner:${config.getAt("support_testrunner")}") {
         exclude module: 'support-annotations'

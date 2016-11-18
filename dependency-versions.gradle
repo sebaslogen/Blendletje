@@ -10,4 +10,5 @@ ext {
     junit = '4.12'
     espresso = '2.2.2'
     support_testrunner = '0.5'
+    mockito = '1.10.19'
 }
