@@ -15,4 +15,6 @@ ext {
     halarious = '0.14'
     gson = '2.8.0'
     mockwebserver = '3.4.2'
+    retrofit = '2.1.0'
+    okhttp = '3.4.2'
 }

@@ -35,6 +35,9 @@ dependencies {
     compile "com.android.support:appcompat-v7:${config.getAt("support_version")}"
     compile "ch.halarious:halarious-core:${config.getAt("halarious")}"
     compile "com.google.code.gson:gson:${config.getAt("gson")}"
+    compile "com.squareup.okhttp3:okhttp:${config.getAt("okhttp")}"
+    compile "com.squareup.retrofit2:retrofit:${config.getAt("retrofit")}"
+    compile "com.squareup.retrofit2:converter-gson:${config.getAt("retrofit")}"
 
     apt "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
     provided "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
