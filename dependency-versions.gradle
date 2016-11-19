@@ -14,4 +14,5 @@ ext {
     auto_value = '1.4-rc1'
     halarious = '0.14'
     gson = '2.8.0'
+    mockwebserver = '3.4.2'
 }

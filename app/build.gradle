@@ -22,7 +22,7 @@ android {
         }
     }
     lintOptions {
-        abortOnError false
+        warning 'NewApi'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -41,6 +41,7 @@ dependencies {
 
     testCompile "junit:junit:${config.getAt("junit")}"
     testCompile "org.mockito:mockito-core:${config.getAt("mockito")}"
+    testCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
 
     //Espresso dependencies
     androidTestCompile("com.android.support.test:runner:${config.getAt("support_testrunner")}") {
