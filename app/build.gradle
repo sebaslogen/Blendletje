@@ -31,6 +31,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "com.android.support:appcompat-v7:${config.getAt("support_version")}"
     compile "ch.halarious:halarious-core:${config.getAt("halarious")}"
+    compile "com.google.code.gson:gson:${config.getAt("gson")}"
 
     apt "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
     provided "com.google.auto.value:auto-value:${config.getAt("auto_value")}"

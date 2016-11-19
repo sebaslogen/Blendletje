@@ -13,4 +13,5 @@ ext {
     mockito = '1.10.19'
     auto_value = '1.4-rc1'
     halarious = '0.14'
+    gson = '2.8.0'
 }
