@@ -11,15 +11,15 @@ public class ArticleResource implements HalResource {
     @HalEmbedded
     private ArticleManifestResource manifest;
 
-    String self() {
+    public String self() {
         return self;
     }
 
-    String id() {
+    public String id() {
         return id;
     }
 
-    ArticleManifestResource manifest() {
+    public ArticleManifestResource manifest() {
         return manifest;
     }
 

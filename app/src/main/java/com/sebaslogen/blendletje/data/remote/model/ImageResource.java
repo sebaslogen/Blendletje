@@ -1,21 +1,19 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-import ch.halarious.core.HalResource;
-
-public class ImageResource implements HalResource {
+public class ImageResource {
     private String href;
     private int width;
     private int height;
 
-    String href() {
+    public String href() {
         return href;
     }
 
-    int width() {
+    public int width() {
         return width;
     }
 
-    int height() {
+    public int height() {
         return height;
     }
 

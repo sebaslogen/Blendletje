@@ -6,20 +6,26 @@ import java.util.List;
 import ch.halarious.core.HalResource;
 
 public class ArticleManifestResource implements HalResource {
+    private String id;
     private List<ArticleBodyItemResource> body = new ArrayList<>();
-    private List<ArticleImagesResource> images = new ArrayList<>();
+    private List<ArticleImagesContainer> images = new ArrayList<>();
 
-    List<ArticleBodyItemResource> body() {
+    public String id() {
+        return id;
+    }
+
+    public List<ArticleBodyItemResource> body() {
         return body;
     }
 
-    List<ArticleImagesResource> images() {
+    public List<ArticleImagesContainer> images() {
         return images;
     }
 
     @Override
     public String toString() {
         return "ArticleManifestResource{"
+                + "id=" + id + ", "
                 + "body=" + body + ", "
                 + "images=" + images
                 + "}";
@@ -32,7 +38,8 @@ public class ArticleManifestResource implements HalResource {
         }
         if (o instanceof ArticleManifestResource) {
             ArticleManifestResource that = (ArticleManifestResource) o;
-            return (this.body.equals(that.body()))
+            return (this.id.equals(that.id()))
+                    && (this.body.equals(that.body()))
                     && (this.images.equals(that.images()));
         }
         return false;
@@ -41,6 +48,8 @@ public class ArticleManifestResource implements HalResource {
     @Override
     public int hashCode() {
         int h = 1;
+        h *= 1000003;
+        h ^= this.id.hashCode();
         h *= 1000003;
         h ^= this.body.hashCode();
         h *= 1000003;

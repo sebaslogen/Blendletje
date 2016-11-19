@@ -11,10 +11,12 @@ ext {
     espresso = '2.2.2'
     support_testrunner = '0.5'
     mockito = '1.10.19'
+    hamcrest = '1.1'
     auto_value = '1.4-rc1'
     halarious = '0.14'
     gson = '2.8.0'
     mockwebserver = '3.4.2'
     retrofit = '2.1.0'
     okhttp = '3.4.2'
+
 }

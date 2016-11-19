@@ -13,11 +13,11 @@ public class PopularArticlesResource implements HalResource {
     @HalEmbedded
     private List<ArticleResource> items = new ArrayList<>();
 
-    String self() {
+    public String self() {
         return self;
     }
 
-    List<ArticleResource> items() {
+    public List<ArticleResource> items() {
         return items;
     }
 

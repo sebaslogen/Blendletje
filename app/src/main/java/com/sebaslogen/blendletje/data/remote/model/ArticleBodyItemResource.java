@@ -1,16 +1,14 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-import ch.halarious.core.HalResource;
-
-public class ArticleBodyItemResource implements HalResource {
+public class ArticleBodyItemResource {
     private String type;
     private String content;
 
-    String type() {
+    public String type() {
         return type;
     }
 
-    String content() {
+    public String content() {
         return content;
     }
 

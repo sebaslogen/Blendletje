@@ -1,40 +1,28 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-import ch.halarious.core.HalLink;
-import ch.halarious.core.HalResource;
-
-public class ArticleImagesResource implements HalResource {
-    @HalLink
+public class ArticleImagesLinks {
     private ImageResource small;
-    @HalLink
     private ImageResource medium;
-    @HalLink
     private ImageResource large;
-    private String caption;
 
-    ImageResource small() {
+    public ImageResource small() {
         return small;
     }
 
-    ImageResource medium() {
+    public ImageResource medium() {
         return medium;
     }
 
-    ImageResource large() {
+    public ImageResource large() {
         return large;
-    }
-
-    String caption() {
-        return caption;
     }
 
     @Override
     public String toString() {
-        return "ArticleImagesResource{"
+        return "ArticleImagesLinks{"
                 + "small=" + small + ", "
                 + "medium=" + medium + ", "
                 + "large=" + large + ", "
-                + "caption=" + caption
                 + "}";
     }
 
@@ -43,12 +31,11 @@ public class ArticleImagesResource implements HalResource {
         if (o == this) {
             return true;
         }
-        if (o instanceof ArticleImagesResource) {
-            ArticleImagesResource that = (ArticleImagesResource) o;
+        if (o instanceof ArticleImagesLinks) {
+            ArticleImagesLinks that = (ArticleImagesLinks) o;
             return (this.small.equals(that.small()))
                     && (this.medium.equals(that.medium()))
-                    && (this.large.equals(that.large()))
-                    && (this.caption.equals(that.caption()));
+                    && (this.large.equals(that.large()));
         }
         return false;
     }
@@ -62,8 +49,6 @@ public class ArticleImagesResource implements HalResource {
         h ^= this.medium.hashCode();
         h *= 1000003;
         h ^= this.large.hashCode();
-        h *= 1000003;
-        h ^= this.caption.hashCode();
         return h;
     }
 }
