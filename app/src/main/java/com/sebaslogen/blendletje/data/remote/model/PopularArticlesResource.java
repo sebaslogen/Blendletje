@@ -1,21 +1,53 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-import com.google.auto.value.AutoValue;
-
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.halarious.core.HalEmbedded;
 import ch.halarious.core.HalLink;
 import ch.halarious.core.HalResource;
 
-@AutoValue
-public abstract class PopularArticlesResource implements HalResource {
+public class PopularArticlesResource implements HalResource {
     @HalLink
-    abstract String self();
+    private String self;
     @HalEmbedded
-    abstract List<ArticleResource> items();
+    private List<ArticleResource> items = new ArrayList<>();
 
-    public static PopularArticlesResource create(String self, List<ArticleResource> items) {
-        return new AutoValue_PopularArticlesResource(self, items);
+    String self() {
+        return self;
+    }
+
+    List<ArticleResource> items() {
+        return items;
+    }
+
+    public String toString() {
+        return "PopularArticlesResource{"
+                + "self=" + self + ", "
+                + "items=" + items
+                + "}";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof PopularArticlesResource) {
+            PopularArticlesResource that = (PopularArticlesResource) o;
+            return (this.self.equals(that.self()))
+                    && (this.items.equals(that.items()));
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int h = 1;
+        h *= 1000003;
+        h ^= this.self.hashCode();
+        h *= 1000003;
+        h ^= this.items.hashCode();
+        return h;
     }
 }
