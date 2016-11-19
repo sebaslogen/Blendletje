@@ -4,14 +4,17 @@ import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Query;
+import rx.Observable;
 
 public interface BlendleAPI {
 
-    String ENDPOINT = "https://ws.blendle.com";
+    String END_POINT = "https://ws.blendle.com";
 
     @GET("items/popular")
     Call<PopularArticlesResource> popularArticles();
 
-    @GET("test")
-    Call<String> testCall();
+    @GET("items/popular")
+    Observable<PopularArticlesResource> popularArticlesObservable(@Query("amount") int amount,
+                                                                  @Query("page") int page);
 }

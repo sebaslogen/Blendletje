@@ -39,6 +39,8 @@ dependencies {
     compile "com.squareup.okhttp3:okhttp:${config.getAt("okhttp")}"
     compile "com.squareup.retrofit2:retrofit:${config.getAt("retrofit")}"
     compile "com.squareup.retrofit2:converter-gson:${config.getAt("retrofit")}"
+    compile "io.reactivex:rxandroid:${config.getAt("rxandroid")}"
+    compile "io.reactivex:rxjava:${config.getAt("rxjava")}"
 
     apt "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
     provided "com.google.auto.value:auto-value:${config.getAt("auto_value")}"

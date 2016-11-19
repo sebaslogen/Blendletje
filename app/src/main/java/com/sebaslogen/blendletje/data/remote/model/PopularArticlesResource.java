@@ -10,11 +10,22 @@ import ch.halarious.core.HalResource;
 public class PopularArticlesResource implements HalResource {
     @HalLink
     private String self;
+    @HalLink
+    private String prev;
+    @HalLink
+    private String next;
     @HalEmbedded
     private List<ArticleResource> items = new ArrayList<>();
 
     public String self() {
         return self;
+    }
+
+    public String prev() {
+        return prev;
+    }
+    public String next() {
+        return next;
     }
 
     public List<ArticleResource> items() {
@@ -24,6 +35,8 @@ public class PopularArticlesResource implements HalResource {
     public String toString() {
         return "PopularArticlesResource{"
                 + "self=" + self + ", "
+                + "self=" + prev + ", "
+                + "self=" + next + ", "
                 + "items=" + items
                 + "}";
     }
@@ -36,6 +49,8 @@ public class PopularArticlesResource implements HalResource {
         if (o instanceof PopularArticlesResource) {
             PopularArticlesResource that = (PopularArticlesResource) o;
             return (this.self.equals(that.self()))
+                    && (this.prev.equals(that.prev()))
+                    && (this.next.equals(that.next()))
                     && (this.items.equals(that.items()));
         }
         return false;
@@ -46,6 +61,10 @@ public class PopularArticlesResource implements HalResource {
         int h = 1;
         h *= 1000003;
         h ^= this.self.hashCode();
+        h *= 1000003;
+        h ^= this.prev.hashCode();
+        h *= 1000003;
+        h ^= this.next.hashCode();
         h *= 1000003;
         h ^= this.items.hashCode();
         return h;

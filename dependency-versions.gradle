@@ -18,5 +18,6 @@ ext {
     mockwebserver = '3.4.2'
     retrofit = '2.1.0'
     okhttp = '3.4.2'
-
+    rxandroid = '1.2.1'
+    rxjava = '1.2.2'
 }

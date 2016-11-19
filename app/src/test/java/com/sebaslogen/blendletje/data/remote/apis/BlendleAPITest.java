@@ -1,6 +1,6 @@
-package com.sebaslogen.blendletje.data.remote;
+package com.sebaslogen.blendletje.data.remote.apis;
 
-import com.sebaslogen.blendletje.data.remote.apis.BlendleAPI;
+import com.sebaslogen.blendletje.data.remote.HALConverterFactory;
 import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 
@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ArticlesServerTest {
+public class BlendleAPITest {
 
     private MockWebServer mServer;
 
