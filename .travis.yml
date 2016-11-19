@@ -44,5 +44,5 @@ script:
   - ./gradlew check connectedCheck -PdisablePreDex
 after_script:
   - echo "Travis TRAVIS_BUILD_DIR:"${TRAVIS_BUILD_DIR}
-  - echo ${TRAVIS_BUILD_DIR}/app/build/outputs/lint-results-debug.html
+  - cat ${TRAVIS_BUILD_DIR}/app/build/outputs/lint-results-debug.html
   - head -200 ${TRAVIS_BUILD_DIR}/app/build/outputs/androidTest-results/connected/*
