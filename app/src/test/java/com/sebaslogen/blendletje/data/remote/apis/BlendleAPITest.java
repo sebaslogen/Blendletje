@@ -9,17 +9,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.List;
 
 import okhttp3.HttpUrl;
-import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static com.sebaslogen.blendletje.data.remote.TestUtils.readResourcesFile;
+import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,7 +30,7 @@ public class BlendleAPITest {
 
     @Before
     public void setUp() throws Exception {
-        setupTestServer();
+        mServer = new MockWebServer(); // Create a MockWebServer. These are lean enough to create an instance for every unit test
     }
 
     @After
@@ -43,7 +41,8 @@ public class BlendleAPITest {
     @Test
     public void requestPopularArticlesFromServer_parsesListOfArticlesFromJsonResponse() throws Exception {
         // Given there is a web server with some prepared responses
-        final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer, "popular(ws.blendle.com_items_popular).json");
+        final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
+                "popular(ws.blendle.com_items_popular).json");
 
         // When I make a web request
         final Retrofit retrofit = new Retrofit.Builder()
@@ -63,23 +62,5 @@ public class BlendleAPITest {
         assertThat("No text contents loaded for first article", firstArticle.manifest().body().size(), greaterThan(0));
         assertThat("No images information loaded for first article", firstArticle.manifest().images().size(), greaterThan(0));
         assertNotNull("No small image information loaded for first article", firstArticle.manifest().images().get(0)._links().small());
-
-
-    }
-
-    private HttpUrl prepareAndStartServerToReturnJsonFromFile(final MockWebServer mockWebServer, final String fileName) throws IOException {
-        final String responseBody = readResourcesFile(fileName);
-        mockWebServer.enqueue(new MockResponse()
-                .addHeader("Content-Type", "application/json")
-                .setResponseCode(HttpURLConnection.HTTP_OK)
-                .setBody(responseBody));
-        mockWebServer.start();
-        // Ask the mServer for its URL. You'll need this to make HTTP requests.
-        return mockWebServer.url("/");
-    }
-
-    private void setupTestServer() throws IOException {
-        // Create a MockWebServer. These are lean enough to create an instance for every unit test
-        mServer = new MockWebServer();
     }
 }

@@ -8,10 +8,23 @@ import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
 
 import java.io.IOException;
 
+import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 public class ArticlesServer implements ArticlesDataSource {
+
+    private final CallAdapter.Factory mRxAdapter;
+
+    public ArticlesServer() {
+        mRxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
+    }
+
+    public ArticlesServer(final CallAdapter.Factory rxAdapter) {
+        mRxAdapter = rxAdapter;
+    }
 
     @Override
     public PopularArticlesResource requestPopularArticles() throws IOException {
@@ -31,6 +44,7 @@ public class ArticlesServer implements ArticlesDataSource {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BlendleAPI.END_POINT)
                 .addConverterFactory(HALConverterFactory.create(PopularArticlesResource.class))
+                .addCallAdapterFactory(mRxAdapter)
                 .build();
         final BlendleAPI blendleAPI = retrofit.create(BlendleAPI.class);
         return blendleAPI.popularArticlesObservable(amount, page);
