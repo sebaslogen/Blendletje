@@ -2,7 +2,6 @@ package com.sebaslogen.blendletje.data.remote.model;
 
 import com.google.auto.value.AutoValue;
 
-import ch.halarious.core.HalLink;
 import ch.halarious.core.HalResource;
 
 @AutoValue

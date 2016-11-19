@@ -41,7 +41,7 @@ before_script:
   - adb devices
   - adb shell input keyevent 82 &
 script:
-  - ./gradlew connectedCheck -PdisablePreDex
+  - ./gradlew check checkstyle connectedCheck -PdisablePreDex
 after_script:
   - echo "Travis TRAVIS_BUILD_DIR:"${TRAVIS_BUILD_DIR}
   - head -200 ${TRAVIS_BUILD_DIR}/app/build/outputs/androidTest-results/connected/*
