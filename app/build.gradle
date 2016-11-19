@@ -23,6 +23,7 @@ android {
     }
     lintOptions {
         warning 'NewApi'
+        disable 'InvalidPackage'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
