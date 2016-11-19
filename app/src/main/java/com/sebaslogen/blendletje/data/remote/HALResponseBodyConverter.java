@@ -15,28 +15,28 @@ final class HALResponseBodyConverter<T extends HalResource> implements Converter
 
     private final Gson gson;
 
-    HALResponseBodyConverter(Gson gson) {
+    HALResponseBodyConverter(final Gson gson) {
         this.gson = gson;
     }
 
-    @Override public T convert(ResponseBody value) throws IOException {
-        BufferedSource source = value.source();
+    @Override public T convert(final ResponseBody value) throws IOException {
+        final BufferedSource source = value.source();
         try {
-            String s = source.readString(Charset.forName("UTF-8"));
+            final String s = source.readString(Charset.forName("UTF-8"));
             //noinspection unchecked
             return (T) gson.fromJson(s, HalResource.class);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         } finally {
             closeQuietly(source);
         }
     }
 
-    private static void closeQuietly(Closeable closeable) {
+    private static void closeQuietly(final Closeable closeable) {
         if (closeable == null) return;
         try {
             closeable.close();
-        } catch (IOException ignored) {
+        } catch (final IOException ignored) {
         }
     }
 }

@@ -18,14 +18,14 @@ import retrofit2.Retrofit;
 public final class HALConverterFactory extends Converter.Factory {
     private final Gson gson;
 
-    public static HALConverterFactory create(Class<?> type) {
+    public static HALConverterFactory create(final Class<?> type) {
         return new HALConverterFactory(type);
     }
 
-    private HALConverterFactory(Class<?> type) {
+    private HALConverterFactory(final Class<?> type) {
         if (!HalResource.class.isAssignableFrom(type))
             throw new NullPointerException("Type should be a subclass of HalResource");
-        GsonBuilder builder = new GsonBuilder();
+        final GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(HalResource.class, new HalSerializer());
         builder.registerTypeAdapter(HalResource.class, new HalDeserializer(type));
         builder.setExclusionStrategies(new HalExclusionStrategy());
@@ -33,12 +33,17 @@ public final class HALConverterFactory extends Converter.Factory {
     }
 
     @Override
-    public Converter<ResponseBody, ?> responseBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+    public Converter<ResponseBody, ?> responseBodyConverter(final Type type,
+                                                            final Annotation[] annotations,
+                                                            final Retrofit retrofit) {
         return new HALResponseBodyConverter<>(gson);
     }
 
     @Override
-    public Converter<?, RequestBody> requestBodyConverter(Type type, Annotation[] parameterAnnotations, Annotation[] methodAnnotations, Retrofit retrofit) {
+    public Converter<?, RequestBody> requestBodyConverter(final Type type,
+                                                          final Annotation[] parameterAnnotations,
+                                                          final Annotation[] methodAnnotations,
+                                                          final Retrofit retrofit) {
         return super.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit);
     }
 }

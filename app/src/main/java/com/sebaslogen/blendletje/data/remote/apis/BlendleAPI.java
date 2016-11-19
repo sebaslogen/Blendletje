@@ -15,6 +15,6 @@ public interface BlendleAPI {
     Call<PopularArticlesResource> popularArticles();
 
     @GET("items/popular")
-    Observable<PopularArticlesResource> popularArticlesObservable(@Query("amount") int amount,
-                                                                  @Query("page") int page);
+    Observable<PopularArticlesResource> popularArticlesObservable(@Query("amount") Integer amount,
+                                                                  @Query("page") Integer page);
 }
