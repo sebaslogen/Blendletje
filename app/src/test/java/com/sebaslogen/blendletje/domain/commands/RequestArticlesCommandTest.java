@@ -52,6 +52,7 @@ public class RequestArticlesCommandTest {
 
         // Then the request is correctly received
         final List<List<Article>> events = testSubscriber.getOnNextEvents();
+        testSubscriber.assertNoErrors();
         assertTrue("There should only one event with the request results", events.size() == 1);
         final List<Article> popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.size(), greaterThan(0));

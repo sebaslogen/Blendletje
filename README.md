@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/sebaslogen/Blendletje.svg?branch=master)](https://travis-ci.org/sebaslogen/Blendletje)
 
 # Blendletje
-Sample Android project of a Blendle client.
-The client will load automatically the most popular articles from Blendle API
-Blendle API can be found here: https://static.blendle.nl/api.json
+Sample Android project of a [Blendle](https://blendle.com) client.
+
+The client will load automatically the most popular articles from Blendle API, which can be found here: https://static.blendle.nl/api.json
 
 
 Technical features
@@ -33,7 +33,7 @@ Running the project and the tests
 =============
 Open the project in Android Studio and select the gradle task '**installDebug**' or simply press the Run button.
 
-To run all the tests from the command line run ```gradlew check connectedCheck```.
+To run all the tests from the command line execute ```./gradlew check connectedCheck``` from the project's folder.
 
 _Note: Make sure to connect a phone to the computer or start an emulator before running the tests._
 

@@ -16,8 +16,21 @@ import com.sebaslogen.blendletje.domain.model.MultipleSizeImage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 
+/**
+ * Class in charge of transforming data received from the data layer (backend or database)
+ * into data model suitable for this application's domain and UI
+ */
 public class ArticlesDataMapper {
+
+    /**
+     * Map a container of popular articles from the data layer into a list of articles
+     * in the domain layer
+     *
+     * @param popularArticles Object containing popular articles from the data layer
+     * @return A new list of articles with only the required information for this application's domain and UI
+     */
     public static List<Article> convertPopularArticlesListToDomain(final PopularArticlesResource popularArticles) {
         final ArrayList<Article> articles = new ArrayList<>();
         final List<ArticleResource> articleResources = popularArticles.items();
@@ -62,45 +75,35 @@ public class ArticlesDataMapper {
                     extractImageMetadata(articleImagesLinks.medium()),
                     extractImageMetadata(articleImagesLinks.large()));
         }
-        throw new NullPointerException();
+        throw new MissingResourceException("No images data found when parsing data",
+                ArticlesDataMapper.class.getName(), "MultipleSizeImage");
     }
 
     private static ImageMetadata extractImageMetadata(final ImageResource imageResource) {
         return ImageMetadata.create(imageResource.href(), imageResource.width(), imageResource.height());
     }
 
-    private static List<ArticleContent> extractContents(final ArticleResource articleResource) {
-        final ArrayList<ArticleContent> articleContents = new ArrayList<>();
+    private static ArticleContent extractContents(final ArticleResource articleResource) {
+        String title = null;
+        final List<String> paragraphs = new ArrayList<>();
         final ArticleManifestResource manifest = articleResource.manifest();
         if (manifest != null) {
             final List<ArticleBodyItemResource> body = manifest.body();
             if (body != null) {
                 for (final ArticleBodyItemResource articleBodyItemResource : body) {
-                    articleContents.add(ArticleContent.create(
-                            extractContentType(articleBodyItemResource.type()),
-                            articleBodyItemResource.content()));
+                    final String type = articleBodyItemResource.type();
+                    if (ContentType.TITLE_REPRESENTATION.equalsIgnoreCase(type)) {
+                        title = articleBodyItemResource.content();
+                    } else if (ContentType.PARAGRAPH_REPRESENTATION.equalsIgnoreCase(type)) {
+                        paragraphs.add(articleBodyItemResource.content());
+                    }
                 }
             }
         }
-        return articleContents;
-    }
-
-    private static ContentType extractContentType(final String type) {
-        switch (type) {
-            case ContentType.INTRO_REPRESENTATION:
-                return ContentType.INTRO;
-            case ContentType.KICKER_REPRESENTATION:
-                return ContentType.KICKER;
-            case ContentType.OWNER_REPRESENTATION:
-                return ContentType.OWNER;
-            case ContentType.PARAGRAPH_REPRESENTATION:
-                return ContentType.PARAGRAPH;
-            case ContentType.SUBTITLE_REPRESENTATION:
-                return ContentType.SUBTITLE;
-            case ContentType.SECOND_SUBTITLE_REPRESENTATION:
-                return ContentType.SECOND_SUBTITLE;
-            default:
-                return ContentType.OTHER;
+        if (title == null) {
+            throw new MissingResourceException("No title text found when parsing data",
+                    ArticlesDataMapper.class.getName(), "Manifest.intro");
         }
+        return ArticleContent.create(title, paragraphs);
     }
 }

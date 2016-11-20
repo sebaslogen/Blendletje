@@ -66,6 +66,7 @@ public class ArticlesServerTest {
 
         // Then the request is correctly received
         final List<PopularArticlesResource> events = testSubscriber.getOnNextEvents();
+        testSubscriber.assertNoErrors();
         assertTrue("There should only one event with the request results", events.size() == 1);
         final PopularArticlesResource popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.items().size(), greaterThan(0));

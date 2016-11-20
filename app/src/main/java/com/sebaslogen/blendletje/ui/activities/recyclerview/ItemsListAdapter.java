@@ -64,7 +64,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void bindArticleItem(final Article article, final ArticleItemViewHolder holder) {
-        holder.getTitle().setText(article.body().get(0).content());
+        holder.getTitle().setText(article.contents().title());
     }
 
     @Override

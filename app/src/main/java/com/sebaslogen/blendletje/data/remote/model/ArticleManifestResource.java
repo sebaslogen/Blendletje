@@ -26,7 +26,7 @@ public class ArticleManifestResource implements HalResource {
     public String toString() {
         return "ArticleManifestResource{"
                 + "id=" + id + ", "
-                + "body=" + body + ", "
+                + "contents=" + body + ", "
                 + "images=" + images
                 + "}";
     }

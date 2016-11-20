@@ -12,7 +12,7 @@ import okhttp3.mockwebserver.MockWebServer;
 public class TestUtils {
 
     /**
-     * Read a JSON file from disk and enqueue it as the response body of the given mock web server
+     * Read a JSON file from disk and enqueue it as the response contents of the given mock web server
      * @param mockWebServer Server in which to enqueue the JSON response
      * @param fileName Name of the JSON file to load from disk
      * @return Base URL to contact the mocked web server
