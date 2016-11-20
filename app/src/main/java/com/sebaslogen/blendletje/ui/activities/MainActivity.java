@@ -1,10 +1,13 @@
 package com.sebaslogen.blendletje.ui.activities;
 
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.ImageView;
 
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Inject
     MainContract.UserActions mUserActions;
     private RecyclerView mPopularArticlesRV;
+    private Drawable mLoadingAnimationDrawable;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -34,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mPopularArticlesRV = (RecyclerView) findViewById(R.id.rv_popular_articles_list);
         mPopularArticlesRV.setLayoutManager(new LinearLayoutManager(this));
         mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>())); // This avoids layout errors
+        mLoadingAnimationDrawable = ((ImageView) findViewById(R.id.iv_animation)).getDrawable();
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
                 .plus(new MainActivityModule(this))
@@ -44,6 +49,14 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     protected void onResume() {
         super.onResume();
         mUserActions.attachView();
+        startLoadingAnimation();
+    }
+
+    private void startLoadingAnimation() {
+        if (mLoadingAnimationDrawable instanceof Animatable) {
+            final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
+            animationDrawable.start();
+        }
     }
 
     @Override

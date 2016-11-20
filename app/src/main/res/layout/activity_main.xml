@@ -8,6 +8,13 @@
     android:background="@color/defaultBackground"
     tools:context="com.sebaslogen.blendletje.ui.activities.MainActivity">
 
+    <ImageView
+        android:id="@+id/iv_animation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:src="@drawable/animated_blendle_logo"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_popular_articles_list"
         android:layout_width="match_parent"

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_blendle_logo">
+
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="1" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="2" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="3" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="4" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="5" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="6" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="7" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="8" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="9" />
+    <target
+        android:animation="@animator/blendle_path_animation"
+        android:name="10" />
+
+</animated-vector>
