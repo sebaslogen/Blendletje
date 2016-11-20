@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void displayPopularArticlesList(final List<ListItem> popularArticlesList) {
+        mPopularArticlesRV.setVisibility(View.VISIBLE);
         mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList));
     }
 
