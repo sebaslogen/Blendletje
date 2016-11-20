@@ -10,6 +10,7 @@ import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
 
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.schedulers.Schedulers;
+import timber.log.Timber;
 
 public class BlendletjeApp extends Application {
 
@@ -17,6 +18,9 @@ public class BlendletjeApp extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
         this.initializeInjector();
     }
 

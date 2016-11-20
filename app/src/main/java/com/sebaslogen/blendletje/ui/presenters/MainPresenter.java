@@ -1,8 +1,5 @@
 package com.sebaslogen.blendletje.ui.presenters;
 
-import android.util.Log;
-
-import com.sebaslogen.blendletje.BuildConfig;
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.domain.model.Article;
 
@@ -12,6 +9,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
+import timber.log.Timber;
 
 public class MainPresenter implements MainContract.UserActions {
 
@@ -45,11 +43,8 @@ public class MainPresenter implements MainContract.UserActions {
                 .subscribe(this::showArticles,
                         throwable -> {
                             // TODO: Handle error loading in UI
-                            if (BuildConfig.DEBUG) {
-                                Log.e(MainPresenter.class.getSimpleName(),
-                                        "Error loading list of articles loaded and thrown to UI",
-                                        throwable);
-                            }
+                            Timber.e(throwable,
+                                    "Error loading list of articles loaded and thrown to UI");
                         });
         mSubscriptions.add(subscription);
     }
@@ -60,8 +55,6 @@ public class MainPresenter implements MainContract.UserActions {
 
     private void showArticles(final List<Article> articles) {
         // TODO: Show articles in UI
-        if (BuildConfig.DEBUG) {
-            Log.d(MainPresenter.class.getSimpleName(), "List of articles loaded and thrown to UI");
-        }
+        Timber.d("List of articles loaded and thrown to UI");
     }
 }
