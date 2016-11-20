@@ -1,14 +1,18 @@
 package com.sebaslogen.blendletje.ui.activities.recyclerview;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.domain.model.Article;
+import com.sebaslogen.blendletje.domain.model.ArticleImage;
 import com.sebaslogen.blendletje.domain.model.ListItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -67,6 +71,12 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private void bindArticleItem(final Article article, final ArticleItemViewHolder holder) {
         holder.setTitle(article.contents().title());
+        final List<ArticleImage> images = article.images();
+        if (images.isEmpty()) {
+            holder.clearImage();
+        } else {
+            holder.setImage(images.get(0).large().url());
+        }
     }
 
     @Override
@@ -82,14 +92,31 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private class ArticleItemViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView mTitle;
+        private final ImageView mImage;
 
         public ArticleItemViewHolder(final View view) {
             super(view);
             mTitle = (TextView) view.findViewById(R.id.tv_title);
+            mImage = (ImageView) view.findViewById(R.id.iv_image);
         }
 
         public void setTitle(final String text) {
             mTitle.setText(getMarkupStrippedString(text));
+        }
+
+        public void setImage(final String url) {
+            final Context context = mImage.getContext();
+            Picasso.with(context).cancelRequest(mImage);
+            Picasso.with(context)
+                    .load(url)
+                    .placeholder(R.drawable.logo)
+                    .error(R.drawable.logo)
+                    .into(mImage);
+        }
+
+        public void clearImage() {
+            Picasso.with(mImage.getContext()).cancelRequest(mImage);
+            mImage.setImageDrawable(null);
         }
     }
 }

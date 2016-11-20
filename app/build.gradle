@@ -50,6 +50,7 @@ dependencies {
     provided "javax.annotation:jsr250-api:${config.getAt("jsr250")}"
     compile "com.google.dagger:dagger:${config.getAt("dagger")}"
     compile "com.jakewharton.timber:timber:${config.getAt("timber")}"
+    compile "com.squareup.picasso:picasso:${config.getAt("picasso")}"
 
     apt "com.google.auto.value:auto-value:${config.getAt("auto_value")}"
     provided "com.google.auto.value:auto-value:${config.getAt("auto_value")}"

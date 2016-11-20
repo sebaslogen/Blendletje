@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Blendletje</string>
     <string name="popular_articles_title">Popular Articles</string>
+    <string name="article_image_description">Article image description</string>
 </resources>

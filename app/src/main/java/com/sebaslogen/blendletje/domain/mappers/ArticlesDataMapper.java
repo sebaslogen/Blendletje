@@ -12,7 +12,6 @@ import com.sebaslogen.blendletje.domain.model.ArticleContent;
 import com.sebaslogen.blendletje.domain.model.ArticleImage;
 import com.sebaslogen.blendletje.domain.model.ContentType;
 import com.sebaslogen.blendletje.domain.model.ImageMetadata;
-import com.sebaslogen.blendletje.domain.model.MultipleSizeImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,27 +55,17 @@ public class ArticlesDataMapper {
             if (images != null) {
                 for (final ArticleImagesContainer articleImagesContainer : images) {
                     final String caption = articleImagesContainer.caption();
-                    try {
-                        articleImages.add(ArticleImage.create(caption, extractImage(articleImagesContainer)));
-                    } catch (final NullPointerException ignore) {
+                    final ArticleImagesLinks articleImagesLinks = articleImagesContainer._links();
+                    if ((caption != null) && (articleImagesLinks != null)) {
+                        articleImages.add(ArticleImage.create(caption,
+                                extractImageMetadata(articleImagesLinks.small()),
+                                extractImageMetadata(articleImagesLinks.medium()),
+                                extractImageMetadata(articleImagesLinks.large())));
                     }
                 }
             }
         }
         return articleImages;
-    }
-
-    private static MultipleSizeImage extractImage(final ArticleImagesContainer articleImagesContainer) {
-
-        final ArticleImagesLinks articleImagesLinks = articleImagesContainer._links();
-        if (articleImagesLinks != null) {
-            return MultipleSizeImage.create(
-                    extractImageMetadata(articleImagesLinks.small()),
-                    extractImageMetadata(articleImagesLinks.medium()),
-                    extractImageMetadata(articleImagesLinks.large()));
-        }
-        throw new MissingResourceException("No images data found when parsing data",
-                ArticlesDataMapper.class.getName(), "MultipleSizeImage");
     }
 
     private static ImageMetadata extractImageMetadata(final ImageResource imageResource) {
