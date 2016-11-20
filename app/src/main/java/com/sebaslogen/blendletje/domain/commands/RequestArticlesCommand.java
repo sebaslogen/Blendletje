@@ -29,4 +29,19 @@ public class RequestArticlesCommand {
                 .requestPopularArticles(amount, page);
         return popularArticlesObservable.map(ArticlesDataMapper::convertPopularArticlesListToDomain);
     }
+
+    public static class RequestArticlesCommandBuilder
+    {
+        private final ArticlesServer mArticlesServer;
+
+        public RequestArticlesCommandBuilder(final ArticlesServer articlesServer)
+        {
+            mArticlesServer = articlesServer;
+        }
+
+        public RequestArticlesCommand createRequestArticlesCommand()
+        {
+            return new RequestArticlesCommand(mArticlesServer);
+        }
+    }
 }

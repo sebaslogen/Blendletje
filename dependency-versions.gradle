@@ -20,4 +20,6 @@ ext {
     okhttp = '3.4.2'
     rxandroid = '1.2.1'
     rxjava = '1.2.2'
+    dagger_version = '2.7'
+    jsr250_version = '1.0'
 }

@@ -8,17 +8,22 @@ import com.sebaslogen.blendletje.domain.model.Article;
 
 import java.util.List;
 
+import rx.Scheduler;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 
 public class MainPresenter implements MainContract.UserActions {
 
     private final MainContract.ViewActions mViewActions;
     private final CompositeSubscription mSubscriptions;
+    private final RequestArticlesCommand.RequestArticlesCommandBuilder mRequestArticlesCommandBuilder;
 
-    public MainPresenter(final MainContract.ViewActions viewActions) {
+    public MainPresenter(final MainContract.ViewActions viewActions,
+                         final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
         mViewActions = viewActions;
         mSubscriptions = new CompositeSubscription();
+        mRequestArticlesCommandBuilder = requestArticlesCommandBuilder;
     }
 
     @Override
@@ -33,8 +38,10 @@ public class MainPresenter implements MainContract.UserActions {
     }
 
     private void loadPopularArticles() {
-        final Subscription subscription = (new RequestArticlesCommand())
+        final Subscription subscription = mRequestArticlesCommandBuilder
+                .createRequestArticlesCommand()
                 .getPopularArticles(null, null)
+                .observeOn(getUIScheduler())
                 .subscribe(this::showArticles,
                         throwable -> {
                             // TODO: Handle error loading in UI
@@ -45,6 +52,10 @@ public class MainPresenter implements MainContract.UserActions {
                             }
                         });
         mSubscriptions.add(subscription);
+    }
+
+    Scheduler getUIScheduler() {
+        return AndroidSchedulers.mainThread();
     }
 
     private void showArticles(final List<Article> articles) {
