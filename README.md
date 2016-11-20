@@ -18,6 +18,7 @@ Libraries
 - Halarious
 - AutoValue
 - Dagger
+- Picasso
 - Mockito
 - Espresso
 - Timber
