@@ -2,6 +2,7 @@ package com.sebaslogen.blendletje.ui.presenters;
 
 import com.sebaslogen.blendletje.data.remote.ArticlesServer;
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
+import com.sebaslogen.blendletje.domain.model.ListItem;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,7 +16,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.schedulers.Schedulers;
 
 import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartServerToReturnJsonFromFile;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -38,14 +39,14 @@ public class MainPresenterTest {
     }
 
     @Test
-    public void onCreation_TitleIsShown() throws IOException {
+    public void onCreation_ListOfArticlesIsLoaded() throws IOException {
         // Given there is a presenter
         final MainPresenter presenter = spy(new MainPresenter(mViewActions, getMockedRequestCommandBuilder()));
         doReturn(Schedulers.immediate()).when(presenter).getUIScheduler();
         // When the view is attached
         presenter.attachView();
         // Then
-        verify(mViewActions).showTitle(anyString());
+        verify(mViewActions).displayPopularArticlesList(anyListOf(ListItem.class));
     }
 
     private RequestArticlesCommand.RequestArticlesCommandBuilder getMockedRequestCommandBuilder() throws IOException {

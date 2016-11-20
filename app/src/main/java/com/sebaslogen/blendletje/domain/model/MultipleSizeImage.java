@@ -4,9 +4,9 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class MultipleSizeImage {
-    abstract ImageMetadata small();
-    abstract ImageMetadata medium();
-    abstract ImageMetadata large();
+    public abstract ImageMetadata small();
+    public abstract ImageMetadata medium();
+    public abstract ImageMetadata large();
 
     public static MultipleSizeImage create(final ImageMetadata small, final ImageMetadata medium,
                                            final ImageMetadata large) {

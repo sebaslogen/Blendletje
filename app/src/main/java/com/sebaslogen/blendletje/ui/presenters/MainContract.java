@@ -1,10 +1,14 @@
 package com.sebaslogen.blendletje.ui.presenters;
 
+import com.sebaslogen.blendletje.domain.model.ListItem;
+
+import java.util.List;
+
 public interface MainContract {
 
     interface ViewActions {
 
-        void showTitle(String text);
+        void displayPopularArticlesList(List<ListItem> popularArticlesList);
     }
 
     interface UserActions {

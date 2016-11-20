@@ -2,7 +2,9 @@ package com.sebaslogen.blendletje.ui.presenters;
 
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.domain.model.Article;
+import com.sebaslogen.blendletje.domain.model.ListItem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import rx.Scheduler;
@@ -26,7 +28,6 @@ public class MainPresenter implements MainContract.UserActions {
 
     @Override
     public void attachView() {
-        mViewActions.showTitle("Hola Blendle!");
         loadPopularArticles();
     }
 
@@ -39,6 +40,7 @@ public class MainPresenter implements MainContract.UserActions {
         final Subscription subscription = mRequestArticlesCommandBuilder
                 .createRequestArticlesCommand()
                 .getPopularArticles(null, null)
+                .map(this::addAdvertisements)
                 .observeOn(getUIScheduler())
                 .subscribe(this::showArticles,
                         throwable -> {
@@ -49,12 +51,18 @@ public class MainPresenter implements MainContract.UserActions {
         mSubscriptions.add(subscription);
     }
 
+    private List<ListItem> addAdvertisements(final List<Article> articles) {
+        final List<ListItem> items = new ArrayList<>(articles);
+        // TODO: Fill items list with advertisements
+        return items;
+    }
+
     Scheduler getUIScheduler() {
         return AndroidSchedulers.mainThread();
     }
 
-    private void showArticles(final List<Article> articles) {
-        // TODO: Show articles in UI
+    private void showArticles(final List<ListItem> items) {
         Timber.d("List of articles loaded and thrown to UI");
+        mViewActions.displayPopularArticlesList(items);
     }
 }
