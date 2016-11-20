@@ -14,6 +14,8 @@ import java.util.List;
 
 import rx.exceptions.OnErrorNotImplementedException;
 
+import static com.sebaslogen.blendletje.ui.utils.TextUtils.getMarkupStrippedString;
+
 public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final short VIEW_TYPE_ARTICLE = 0;
@@ -64,7 +66,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void bindArticleItem(final Article article, final ArticleItemViewHolder holder) {
-        holder.getTitle().setText(article.contents().title());
+        holder.setTitle(article.contents().title());
     }
 
     @Override
@@ -86,8 +88,8 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mTitle = (TextView) view.findViewById(R.id.tv_title);
         }
 
-        public TextView getTitle() {
-            return mTitle;
+        public void setTitle(final String text) {
+            mTitle.setText(getMarkupStrippedString(text));
         }
     }
 }

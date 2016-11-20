@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fl_article_item"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="@dimen/list_item_margin"
+    android:background="?attr/selectableItemBackground"
+    card_view:cardCornerRadius="@dimen/list_item_corner_radius">
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="This is the title"/>
-</FrameLayout>
+        style="@style/Base.TextAppearance.AppCompat.Title"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/listPreferredItemHeight"
+        android:gravity="center_vertical"
+        android:padding="@dimen/list_item_title_padding" />
+</android.support.v7.widget.CardView>
