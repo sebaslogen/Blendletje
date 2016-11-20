@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.List;
 
+import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
@@ -37,10 +38,12 @@ public class ArticlesServerTest {
     @Test
     public void requestPopularArticles() throws Exception {
         // Given there is a web server with some prepared responses
-        prepareAndStartServerToReturnJsonFromFile(mServer, "popular(ws.blendle.com_items_popular).json");
+        final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
+                "popular(ws.blendle.com_items_popular).json");
 
         // When I make a request
-        final ArticlesServer articlesServer = new ArticlesServer();
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
+                createWithScheduler(Schedulers.immediate()));
         final PopularArticlesResource popularArticlesResource = articlesServer.requestPopularArticles();
 
         // Then the request is correctly received
@@ -50,13 +53,14 @@ public class ArticlesServerTest {
     @Test
     public void requestPopularArticlesObservable() throws Exception {
         // Given there is a web server with some prepared responses
-        prepareAndStartServerToReturnJsonFromFile(mServer, "popular(ws.blendle.com_items_popular).json");
+        final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
+                "popular(ws.blendle.com_items_popular).json");
 
         // When I make a request
-        final ArticlesServer articlesServer = new ArticlesServer(RxJavaCallAdapterFactory.
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                 createWithScheduler(Schedulers.immediate()));
         final Observable<PopularArticlesResource> popularArticlesObservable = articlesServer
-                .requestPopularArticlesObservable(null, null);
+                .requestPopularArticles(null, null);
         final TestSubscriber<PopularArticlesResource> testSubscriber = new TestSubscriber<>();
         popularArticlesObservable.subscribe(testSubscriber);
 
@@ -65,7 +69,6 @@ public class ArticlesServerTest {
         assertTrue("There should only one event with the request results", events.size() == 1);
         final PopularArticlesResource popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.items().size(), greaterThan(0));
-
     }
 
 }

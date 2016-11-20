@@ -12,6 +12,6 @@ public interface ArticlesDataSource {
 
     PopularArticlesResource requestPopularArticles() throws IOException;
 
-    Observable<PopularArticlesResource> requestPopularArticlesObservable(@Nullable Integer amount,
-                                                                         @Nullable Integer page);
+    Observable<PopularArticlesResource> requestPopularArticles(@Nullable Integer amount,
+                                                               @Nullable Integer page);
 }

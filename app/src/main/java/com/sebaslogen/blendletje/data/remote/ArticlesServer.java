@@ -8,6 +8,7 @@ import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
 
 import java.io.IOException;
 
+import okhttp3.HttpUrl;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -16,20 +17,23 @@ import rx.schedulers.Schedulers;
 
 public class ArticlesServer implements ArticlesDataSource {
 
+    private final HttpUrl mBaseUrl;
     private final CallAdapter.Factory mRxAdapter;
 
     public ArticlesServer() {
+        mBaseUrl = HttpUrl.parse(BlendleAPI.END_POINT);
         mRxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
     }
 
-    public ArticlesServer(final CallAdapter.Factory rxAdapter) {
+    public ArticlesServer(final HttpUrl baseUrl, final CallAdapter.Factory rxAdapter) {
+        mBaseUrl = baseUrl;
         mRxAdapter = rxAdapter;
     }
 
     @Override
     public PopularArticlesResource requestPopularArticles() throws IOException {
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BlendleAPI.END_POINT)
+                .baseUrl(mBaseUrl)
                 .addConverterFactory(HALConverterFactory.create(PopularArticlesResource.class))
                 .build();
         final BlendleAPI blendleAPI = retrofit.create(BlendleAPI.class);
@@ -39,10 +43,10 @@ public class ArticlesServer implements ArticlesDataSource {
     }
 
     @Override
-    public Observable<PopularArticlesResource> requestPopularArticlesObservable(@Nullable final Integer amount,
-                                                                                @Nullable final Integer page) {
+    public Observable<PopularArticlesResource> requestPopularArticles(@Nullable final Integer amount,
+                                                                      @Nullable final Integer page) {
         final Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BlendleAPI.END_POINT)
+                .baseUrl(mBaseUrl)
                 .addConverterFactory(HALConverterFactory.create(PopularArticlesResource.class))
                 .addCallAdapterFactory(mRxAdapter)
                 .build();
