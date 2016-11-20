@@ -18,9 +18,10 @@ public class MainPresenterTest {
 
     @Test
     public void onCreation_TitleIsShown() {
-        // Given
-        // When
-        new MainPresenter(mViewActions);
+        // Given there is a presenter
+        final MainPresenter presenter = new MainPresenter(mViewActions);
+        // When the view is attached
+        presenter.attachView();
         // Then
         verify(mViewActions).showTitle(anyString());
     }

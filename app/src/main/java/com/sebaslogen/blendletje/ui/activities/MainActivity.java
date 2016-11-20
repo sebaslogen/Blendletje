@@ -23,6 +23,18 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mUserActions.attachView();
+    }
+
+    @Override
+    protected void onPause() {
+        mUserActions.deAttachView();
+        super.onPause();
+    }
+
+    @Override
     public void showTitle(final String text) {
         mText.setText(text);
     }
