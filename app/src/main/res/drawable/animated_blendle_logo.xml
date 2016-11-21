@@ -4,33 +4,33 @@
 
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="1" />
+        android:name="B" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="2" />
+        android:name="l_one" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="3" />
+        android:name="e_one" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="4" />
+        android:name="n" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="5" />
+        android:name="d" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="6" />
+        android:name="l_two" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="7" />
+        android:name="e_two" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="8" />
+        android:name="squared_circle" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="9" />
+        android:name="arrow_one" />
     <target
         android:animation="@animator/blendle_path_animation"
-        android:name="10" />
+        android:name="arrow_one" />
 
 </animated-vector>

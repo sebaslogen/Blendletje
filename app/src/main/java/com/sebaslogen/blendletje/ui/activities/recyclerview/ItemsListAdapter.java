@@ -96,18 +96,18 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private final ImageView mImage;
         private final String mDefaultImageContentDescription;
 
-        public ArticleItemViewHolder(final View view) {
+        ArticleItemViewHolder(final View view) {
             super(view);
             mTitle = (TextView) view.findViewById(R.id.tv_title);
             mImage = (ImageView) view.findViewById(R.id.iv_image);
             mDefaultImageContentDescription = view.getResources().getString(R.string.article_image_description);
         }
 
-        public void setTitle(final String text) {
+        void setTitle(final String text) {
             mTitle.setText(getMarkupStrippedString(text));
         }
 
-        public void setImage(final String url, final String caption) {
+        void setImage(final String url, final String caption) {
             mImage.setContentDescription(caption);
             final Context context = mImage.getContext();
             Picasso.with(context).cancelRequest(mImage);
@@ -118,9 +118,9 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .into(mImage);
         }
 
-        public void clearImage() {
-            mImage.setContentDescription(mDefaultImageContentDescription);
+        void clearImage() {
             Picasso.with(mImage.getContext()).cancelRequest(mImage);
+            mImage.setContentDescription(mDefaultImageContentDescription);
             mImage.setImageDrawable(null);
         }
     }

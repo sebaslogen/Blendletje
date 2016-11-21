@@ -28,6 +28,7 @@ public class MainPresenter implements MainContract.UserActions {
 
     @Override
     public void attachView() {
+        mViewActions.showLoadingAnimation();
         loadPopularArticles();
     }
 
@@ -53,6 +54,10 @@ public class MainPresenter implements MainContract.UserActions {
 
     private List<ListItem> addAdvertisements(final List<Article> articles) {
         final List<ListItem> items = new ArrayList<>(articles);
+        try { // Fake delay caused by loading advertisements
+            Thread.sleep(1500);
+        } catch (final InterruptedException ignored) {
+        }
         // TODO: Fill items list with advertisements
         return items;
     }
@@ -63,6 +68,7 @@ public class MainPresenter implements MainContract.UserActions {
 
     private void showArticles(final List<ListItem> items) {
         Timber.d("List of articles loaded and thrown to UI");
+        mViewActions.stopLoadingAnimation();
         mViewActions.displayPopularArticlesList(items);
     }
 }

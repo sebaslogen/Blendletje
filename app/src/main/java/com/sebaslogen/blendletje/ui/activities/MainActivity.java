@@ -49,10 +49,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     protected void onResume() {
         super.onResume();
         mUserActions.attachView();
-        startLoadingAnimation();
+        showLoadingAnimation();
     }
 
-    private void startLoadingAnimation() {
+    @Override
+    protected void onPause() {
+        mUserActions.deAttachView();
+        super.onPause();
+    }
+
+    @Override
+    public void showLoadingAnimation() {
         if (mLoadingAnimationDrawable instanceof Animatable) {
             final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
             animationDrawable.start();
@@ -60,9 +67,11 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    protected void onPause() {
-        mUserActions.deAttachView();
-        super.onPause();
+    public void stopLoadingAnimation() {
+        if (mLoadingAnimationDrawable instanceof Animatable) {
+            final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
+            animationDrawable.stop();
+        }
     }
 
     @Override

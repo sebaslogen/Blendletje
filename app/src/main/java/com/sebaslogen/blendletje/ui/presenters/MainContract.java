@@ -8,6 +8,10 @@ public interface MainContract {
 
     interface ViewActions {
 
+        void showLoadingAnimation();
+
+        void stopLoadingAnimation();
+
         void displayPopularArticlesList(List<ListItem> popularArticlesList);
     }
 
