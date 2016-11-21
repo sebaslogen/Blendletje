@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.sebaslogen.blendletje.BlendletjeApp;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     MainContract.UserActions mUserActions;
     private RecyclerView mPopularArticlesRV;
     private Drawable mLoadingAnimationDrawable;
+    private ImageView mLoadAnimationView;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -38,7 +40,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mPopularArticlesRV = (RecyclerView) findViewById(R.id.rv_popular_articles_list);
         mPopularArticlesRV.setLayoutManager(new LinearLayoutManager(this));
         mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>())); // This avoids layout errors
-        mLoadingAnimationDrawable = ((ImageView) findViewById(R.id.iv_animation)).getDrawable();
+        mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
+        mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
                 .plus(new MainActivityModule(this))
@@ -60,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void showLoadingAnimation() {
+        mLoadAnimationView.setVisibility(View.VISIBLE);
         if (mLoadingAnimationDrawable instanceof Animatable) {
             final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
             animationDrawable.start();
@@ -67,11 +71,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void stopLoadingAnimation() {
+    public void hideLoadingAnimation() {
         if (mLoadingAnimationDrawable instanceof Animatable) {
             final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
             animationDrawable.stop();
         }
+        mLoadAnimationView.setVisibility(View.GONE);
     }
 
     @Override

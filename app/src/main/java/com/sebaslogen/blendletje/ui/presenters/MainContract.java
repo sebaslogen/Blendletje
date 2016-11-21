@@ -10,7 +10,7 @@ public interface MainContract {
 
         void showLoadingAnimation();
 
-        void stopLoadingAnimation();
+        void hideLoadingAnimation();
 
         void displayPopularArticlesList(List<ListItem> popularArticlesList);
     }

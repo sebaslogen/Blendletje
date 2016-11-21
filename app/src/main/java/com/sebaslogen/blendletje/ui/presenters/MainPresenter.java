@@ -68,7 +68,7 @@ public class MainPresenter implements MainContract.UserActions {
 
     private void showArticles(final List<ListItem> items) {
         Timber.d("List of articles loaded and thrown to UI");
-        mViewActions.stopLoadingAnimation();
+        mViewActions.hideLoadingAnimation();
         mViewActions.displayPopularArticlesList(items);
     }
 }

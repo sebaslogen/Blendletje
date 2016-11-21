@@ -75,11 +75,16 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             default:
                 throw new IllegalArgumentException("View holder contains an unknown item type");
         }
-        // TODO :Extract common interface with advertisement ViewHolder
-        setAnimation(((ArticleItemViewHolder) holder).getContainer(), position);
+        setAnimation(((ViewHolderAnimations) holder), position);
     }
 
-    private void setAnimation(final CardView view, final int position) {
+    @Override
+    public void onViewDetachedFromWindow(final RecyclerView.ViewHolder holder)
+    {
+        ((ViewHolderAnimations)holder).clearAnimation();
+    }
+
+    private void setAnimation(final ViewHolderAnimations view, final int position) {
         if (position > mLastPosition)
         {
             final Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.card_appears);
@@ -112,7 +117,13 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return (mItemsList.get(position) instanceof Article) ? VIEW_TYPE_ARTICLE : VIEW_TYPE_ADVERTISEMENT;
     }
 
-    private class ArticleItemViewHolder extends RecyclerView.ViewHolder {
+    private interface ViewHolderAnimations {
+        Context getContext();
+        void startAnimation(Animation animation);
+        void clearAnimation();
+    }
+
+    private class ArticleItemViewHolder extends RecyclerView.ViewHolder implements ViewHolderAnimations {
 
         private final CardView mContainer;
         private final TextView mTitle;
@@ -154,8 +165,20 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mImage.setImageDrawable(null);
         }
 
-        CardView getContainer() {
-            return mContainer;
+        @Override
+        public Context getContext() {
+            return mContainer.getContext();
+        }
+
+        @Override
+        public void startAnimation(final Animation animation) {
+            mContainer.startAnimation(animation);
+        }
+
+        @Override
+        public void clearAnimation()
+        {
+            mContainer.clearAnimation();
         }
     }
 }
