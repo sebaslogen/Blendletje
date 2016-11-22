@@ -2,6 +2,7 @@ package com.sebaslogen.blendletje.domain.commands;
 
 import com.sebaslogen.blendletje.data.database.DatabaseManager;
 import com.sebaslogen.blendletje.data.remote.ArticlesServer;
+import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.domain.model.Article;
 
 import org.junit.After;
@@ -22,7 +23,9 @@ import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartSer
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class RequestArticlesCommandTest {
 
@@ -39,7 +42,7 @@ public class RequestArticlesCommandTest {
     }
 
     @Test
-    public void getPopularArticles() throws Exception {
+    public void getPopularArticles_returnsListOfArticles() throws Exception {
         // Given there is a web server with some prepared responses
         final HttpUrl httpUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
@@ -59,6 +62,26 @@ public class RequestArticlesCommandTest {
         assertTrue("There should only one event with the request results", events.size() == 1);
         final List<Article> popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.size(), greaterThan(0));
+    }
+
+    @Test
+    public void getPopularArticles_storesArticlesInDB() throws Exception {
+        // Given there is a web server with some prepared responses
+        final HttpUrl httpUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
+                "popular(ws.blendle.com_items_popular).json");
+
+        // When I make a request
+        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        final RequestArticlesCommand command = new RequestArticlesCommand(
+                new ArticlesServer(httpUrl, RxJavaCallAdapterFactory.
+                        createWithScheduler(Schedulers.immediate())),databaseManager);
+        final Observable<List<Article>> popularArticlesObservable = command.getPopularArticles(null, null);
+        final TestSubscriber<List<Article>> testSubscriber = new TestSubscriber<>();
+        popularArticlesObservable.subscribe(testSubscriber);
+
+        // Then the request is correctly received
+        testSubscriber.assertNoErrors();
+        verify(databaseManager).storeObject(any(PopularArticlesResource.class));
     }
 
 }
