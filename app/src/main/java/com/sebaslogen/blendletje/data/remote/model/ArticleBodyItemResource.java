@@ -1,6 +1,10 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-public class ArticleBodyItemResource {
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
+
+@RealmClass
+public class ArticleBodyItemResource implements RealmModel {
     private String type;
     private String content;
 
@@ -21,12 +25,12 @@ public class ArticleBodyItemResource {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this) {
             return true;
         }
         if (o instanceof ArticleBodyItemResource) {
-            ArticleBodyItemResource that = (ArticleBodyItemResource) o;
+            final ArticleBodyItemResource that = (ArticleBodyItemResource) o;
             return (this.type.equals(that.type()))
                     && (this.content.equals(that.content()));
         }
@@ -36,10 +40,14 @@ public class ArticleBodyItemResource {
     @Override
     public int hashCode() {
         int h = 1;
-        h *= 1000003;
-        h ^= this.type.hashCode();
-        h *= 1000003;
-        h ^= this.content.hashCode();
+        if (this.type != null) {
+            h *= 1000003;
+            h ^= this.type.hashCode();
+        }
+        if (this.content != null) {
+            h *= 1000003;
+            h ^= this.content.hashCode();
+        }
         return h;
     }
 }

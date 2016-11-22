@@ -1,13 +1,16 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.halarious.core.HalEmbedded;
 import ch.halarious.core.HalLink;
 import ch.halarious.core.HalResource;
+import io.realm.RealmList;
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
 
-public class PopularArticlesResource implements HalResource {
+@RealmClass
+public class PopularArticlesResource implements HalResource, RealmModel {
     @HalLink
     private String self;
     @HalLink
@@ -15,7 +18,7 @@ public class PopularArticlesResource implements HalResource {
     @HalLink
     private String next;
     @HalEmbedded
-    private List<ArticleResource> items = new ArrayList<>();
+    private RealmList<ArticleResource> items = new RealmList<>();
 
     public String self() {
         return self;
@@ -42,12 +45,12 @@ public class PopularArticlesResource implements HalResource {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this) {
             return true;
         }
         if (o instanceof PopularArticlesResource) {
-            PopularArticlesResource that = (PopularArticlesResource) o;
+            final PopularArticlesResource that = (PopularArticlesResource) o;
             return (this.self.equals(that.self()))
                     && (this.prev.equals(that.prev()))
                     && (this.next.equals(that.next()))
@@ -59,12 +62,18 @@ public class PopularArticlesResource implements HalResource {
     @Override
     public int hashCode() {
         int h = 1;
-        h *= 1000003;
-        h ^= this.self.hashCode();
-        h *= 1000003;
-        h ^= this.prev.hashCode();
-        h *= 1000003;
-        h ^= this.next.hashCode();
+        if (this.self != null) {
+            h *= 1000003;
+            h ^= this.self.hashCode();
+        }
+        if (this.prev != null) {
+            h *= 1000003;
+            h ^= this.prev.hashCode();
+        }
+        if (this.next != null) {
+            h *= 1000003;
+            h ^= this.next.hashCode();
+        }
         h *= 1000003;
         h ^= this.items.hashCode();
         return h;

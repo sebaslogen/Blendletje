@@ -1,6 +1,10 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-public class ArticleImagesLinks {
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
+
+@RealmClass
+public class ArticleImagesLinks implements RealmModel {
     private ImageResource small;
     private ImageResource medium;
     private ImageResource large;
@@ -27,12 +31,12 @@ public class ArticleImagesLinks {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this) {
             return true;
         }
         if (o instanceof ArticleImagesLinks) {
-            ArticleImagesLinks that = (ArticleImagesLinks) o;
+            final ArticleImagesLinks that = (ArticleImagesLinks) o;
             return (this.small.equals(that.small()))
                     && (this.medium.equals(that.medium()))
                     && (this.large.equals(that.large()));
@@ -43,12 +47,18 @@ public class ArticleImagesLinks {
     @Override
     public int hashCode() {
         int h = 1;
-        h *= 1000003;
-        h ^= this.small.hashCode();
-        h *= 1000003;
-        h ^= this.medium.hashCode();
-        h *= 1000003;
-        h ^= this.large.hashCode();
+        if (this.small != null) {
+            h *= 1000003;
+            h ^= this.small.hashCode();
+        }
+        if (this.medium != null) {
+            h *= 1000003;
+            h ^= this.medium.hashCode();
+        }
+        if (this.large != null) {
+            h *= 1000003;
+            h ^= this.large.hashCode();
+        }
         return h;
     }
 }

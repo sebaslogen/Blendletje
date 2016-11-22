@@ -3,8 +3,11 @@ package com.sebaslogen.blendletje.data.remote.model;
 import ch.halarious.core.HalEmbedded;
 import ch.halarious.core.HalLink;
 import ch.halarious.core.HalResource;
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
 
-public class ArticleResource implements HalResource {
+@RealmClass
+public class ArticleResource implements HalResource, RealmModel {
     @HalLink
     private String self;
     private String id;
@@ -33,12 +36,12 @@ public class ArticleResource implements HalResource {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this) {
             return true;
         }
         if (o instanceof ArticleResource) {
-            ArticleResource that = (ArticleResource) o;
+            final ArticleResource that = (ArticleResource) o;
             return (this.self.equals(that.self()))
                     && (this.id.equals(that.id()))
                     && (this.manifest.equals(that.manifest()));
@@ -49,12 +52,18 @@ public class ArticleResource implements HalResource {
     @Override
     public int hashCode() {
         int h = 1;
-        h *= 1000003;
-        h ^= this.self.hashCode();
-        h *= 1000003;
-        h ^= this.id.hashCode();
-        h *= 1000003;
-        h ^= this.manifest.hashCode();
+        if (this.self != null) {
+            h *= 1000003;
+            h ^= this.self.hashCode();
+        }
+        if (this.id != null) {
+            h *= 1000003;
+            h ^= this.id.hashCode();
+        }
+        if (this.manifest != null) {
+            h *= 1000003;
+            h ^= this.manifest.hashCode();
+        }
         return h;
     }
 }

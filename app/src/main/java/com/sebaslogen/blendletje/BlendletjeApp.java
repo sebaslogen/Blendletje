@@ -8,6 +8,7 @@ import com.sebaslogen.blendletje.dependency.injection.components.DaggerCommandsC
 import com.sebaslogen.blendletje.dependency.injection.modules.CommandsModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
 
+import io.realm.Realm;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.schedulers.Schedulers;
 import timber.log.Timber;
@@ -22,6 +23,7 @@ public class BlendletjeApp extends Application {
             Timber.plant(new Timber.DebugTree());
         }
         this.initializeInjector();
+        Realm.init(this); // TODO: Move to Dagger
     }
 
     private void initializeInjector() {

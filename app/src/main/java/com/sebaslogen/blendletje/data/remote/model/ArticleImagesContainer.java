@@ -1,6 +1,10 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
-public class ArticleImagesContainer {
+import io.realm.RealmModel;
+import io.realm.annotations.RealmClass;
+
+@RealmClass
+public class ArticleImagesContainer implements RealmModel {
     private ArticleImagesLinks _links;
     private String caption;
 
@@ -21,12 +25,12 @@ public class ArticleImagesContainer {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this) {
             return true;
         }
         if (o instanceof ArticleImagesContainer) {
-            ArticleImagesContainer that = (ArticleImagesContainer) o;
+            final ArticleImagesContainer that = (ArticleImagesContainer) o;
             return (this._links.equals(that._links()))
                     && (this.caption.equals(that.caption()));
         }
@@ -36,10 +40,14 @@ public class ArticleImagesContainer {
     @Override
     public int hashCode() {
         int h = 1;
-        h *= 1000003;
-        h ^= this._links.hashCode();
-        h *= 1000003;
-        h ^= this.caption.hashCode();
+        if (this._links != null) {
+            h *= 1000003;
+            h ^= this._links.hashCode();
+        }
+        if (this.caption != null) {
+            h *= 1000003;
+            h ^= this.caption.hashCode();
+        }
         return h;
     }
 
