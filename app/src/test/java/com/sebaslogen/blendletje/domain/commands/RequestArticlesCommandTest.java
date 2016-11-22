@@ -1,5 +1,6 @@
 package com.sebaslogen.blendletje.domain.commands;
 
+import com.sebaslogen.blendletje.data.database.DatabaseManager;
 import com.sebaslogen.blendletje.data.remote.ArticlesServer;
 import com.sebaslogen.blendletje.domain.model.Article;
 
@@ -21,6 +22,7 @@ import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartSer
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public class RequestArticlesCommandTest {
 
@@ -45,7 +47,8 @@ public class RequestArticlesCommandTest {
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(httpUrl, RxJavaCallAdapterFactory.
-                        createWithScheduler(Schedulers.immediate())));
+                        createWithScheduler(Schedulers.immediate())),
+                mock(DatabaseManager.class));
         final Observable<List<Article>> popularArticlesObservable = command.getPopularArticles(null, null);
         final TestSubscriber<List<Article>> testSubscriber = new TestSubscriber<>();
         popularArticlesObservable.subscribe(testSubscriber);

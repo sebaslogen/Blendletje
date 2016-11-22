@@ -1,5 +1,6 @@
 package com.sebaslogen.blendletje.dependency.injection.modules;
 
+import com.sebaslogen.blendletje.data.database.DatabaseManager;
 import com.sebaslogen.blendletje.data.remote.ArticlesServer;
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 
@@ -14,7 +15,7 @@ public class CommandsModule {
     @Provides
     @Singleton
     RequestArticlesCommand.RequestArticlesCommandBuilder providesRequestArticlesCommandBuilder(
-            final ArticlesServer articlesServer) {
-        return new RequestArticlesCommand.RequestArticlesCommandBuilder(articlesServer);
+            final ArticlesServer articlesServer, final DatabaseManager databaseManager) {
+        return new RequestArticlesCommand.RequestArticlesCommandBuilder(articlesServer, databaseManager);
     }
 }

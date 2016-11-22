@@ -1,5 +1,6 @@
 package com.sebaslogen.blendletje.ui.presenters;
 
+import com.sebaslogen.blendletje.data.database.DatabaseManager;
 import com.sebaslogen.blendletje.data.remote.ArticlesServer;
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.domain.model.ListItem;
@@ -49,13 +50,15 @@ public class MainPresenterTest {
         verify(mViewActions).displayPopularArticlesList(anyListOf(ListItem.class));
     }
 
-    private RequestArticlesCommand.RequestArticlesCommandBuilder getMockedRequestCommandBuilder() throws IOException {
+    private RequestArticlesCommand.RequestArticlesCommandBuilder getMockedRequestCommandBuilder()
+            throws IOException {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
 
         final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                 createWithScheduler(Schedulers.immediate()));
-        return new RequestArticlesCommand.RequestArticlesCommandBuilder(articlesServer);
+        return new RequestArticlesCommand
+                .RequestArticlesCommandBuilder(articlesServer, mock(DatabaseManager.class));
     }
 
 }

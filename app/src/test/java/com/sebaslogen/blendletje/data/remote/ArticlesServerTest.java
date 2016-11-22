@@ -36,7 +36,7 @@ public class ArticlesServerTest {
     }
 
     @Test
-    public void requestPopularArticles() throws Exception {
+    public void requestPopularArticles_returnsObjectWithArticles() throws Exception {
         // Given there is a web server with some prepared responses
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
@@ -51,7 +51,7 @@ public class ArticlesServerTest {
     }
 
     @Test
-    public void requestPopularArticlesObservable() throws Exception {
+    public void requestPopularArticlesObservable_returnsObjectWithArticles() throws Exception {
         // Given there is a web server with some prepared responses
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
@@ -71,5 +71,4 @@ public class ArticlesServerTest {
         final PopularArticlesResource popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.items().size(), greaterThan(0));
     }
-
 }
