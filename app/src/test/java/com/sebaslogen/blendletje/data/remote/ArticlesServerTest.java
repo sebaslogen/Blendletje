@@ -16,7 +16,7 @@ import rx.Observable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartServerToReturnJsonFromFile;
+import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;

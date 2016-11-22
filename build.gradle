@@ -2,9 +2,17 @@
 
 apply from: 'dependency-versions.gradle'
 
+allprojects {
+    repositories {
+        jcenter()
+        maven { url "https://jitpack.io" }
+    }
+}
+
 buildscript {
     repositories {
         jcenter()
+        maven { url "https://jitpack.io" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'

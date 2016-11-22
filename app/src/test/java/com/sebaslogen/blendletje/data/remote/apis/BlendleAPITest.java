@@ -17,7 +17,7 @@ import okhttp3.mockwebserver.RecordedRequest;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartServerToReturnJsonFromFile;
+import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

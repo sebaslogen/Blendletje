@@ -1,4 +1,4 @@
-package com.sebaslogen.blendletje.data.remote;
+package utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

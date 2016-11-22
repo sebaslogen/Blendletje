@@ -16,7 +16,7 @@ import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.schedulers.Schedulers;
 
-import static com.sebaslogen.blendletje.data.remote.TestUtils.prepareAndStartServerToReturnJsonFromFile;
+import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -43,6 +43,7 @@ public class MainPresenterTest {
     public void onCreation_ListOfArticlesIsLoaded() throws IOException {
         // Given there is a presenter
         final MainPresenter presenter = spy(new MainPresenter(mViewActions, getMockedRequestCommandBuilder()));
+        doReturn(Schedulers.immediate()).when(presenter).getIOScheduler();
         doReturn(Schedulers.immediate()).when(presenter).getUIScheduler();
         // When the view is attached
         presenter.attachView();

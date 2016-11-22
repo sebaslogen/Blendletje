@@ -13,7 +13,6 @@ import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
-import rx.schedulers.Schedulers;
 
 public class ArticlesServer implements ArticlesDataSource {
 
@@ -22,7 +21,7 @@ public class ArticlesServer implements ArticlesDataSource {
 
     public ArticlesServer() {
         mBaseUrl = HttpUrl.parse(BlendleAPI.END_POINT);
-        mRxAdapter = RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io());
+        mRxAdapter = RxJavaCallAdapterFactory.create();
     }
 
     public ArticlesServer(final HttpUrl baseUrl, final CallAdapter.Factory rxAdapter) {

@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje;
 
 import android.app.Application;
+import android.support.annotation.VisibleForTesting;
 
 import com.sebaslogen.blendletje.data.remote.apis.BlendleAPI;
 import com.sebaslogen.blendletje.dependency.injection.components.CommandsComponent;
@@ -12,7 +13,6 @@ import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class BlendletjeApp extends Application {
@@ -39,7 +39,7 @@ public class BlendletjeApp extends Application {
                 .build();
         mCommandsComponent = DaggerCommandsComponent.builder()
                 .networkModule(new NetworkModule(BlendleAPI.END_POINT,
-                        RxJavaCallAdapterFactory.createWithScheduler(Schedulers.io())))
+                        RxJavaCallAdapterFactory.create()))
                 .databaseModule(new DatabaseModule(realmConfiguration))
                 .commandsModule(new CommandsModule())
                 .build();
@@ -47,6 +47,12 @@ public class BlendletjeApp extends Application {
 
     public CommandsComponent getCommandsComponent() {
         return mCommandsComponent;
+    }
+
+
+    @VisibleForTesting
+    public void setComponent(final CommandsComponent commandsComponent) {
+        mCommandsComponent = commandsComponent;
     }
 
 }

@@ -19,7 +19,7 @@ public class DatabaseModule {
 
     @Provides
     @Singleton
-    DatabaseManager providesDatabaseManager() {
+    public DatabaseManager providesDatabaseManager() {
         return new DatabaseManager(mDatabaseConfig);
     }
 }

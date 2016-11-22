@@ -10,6 +10,7 @@ import java.util.List;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -42,6 +43,7 @@ public class MainPresenter implements MainContract.UserActions {
                 .createRequestArticlesCommand()
                 .getPopularArticles(null, null)
                 .map(this::addAdvertisements)
+                .subscribeOn(getIOScheduler())
                 .observeOn(getUIScheduler())
                 .subscribe(this::showArticles,
                         throwable -> {
@@ -60,6 +62,10 @@ public class MainPresenter implements MainContract.UserActions {
         }
         // TODO: Fill items list with advertisements
         return items;
+    }
+
+    Scheduler getIOScheduler() {
+        return Schedulers.io();
     }
 
     Scheduler getUIScheduler() {

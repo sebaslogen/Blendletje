@@ -30,6 +30,18 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    sourceSets { // This enables sharing code between Unit and Instrumentation tests
+        String sharedTestDir = "$rootDir/app/src/testShared/java"
+        String sharedResourcesTestDir = "$rootDir/app/src/testShared/resources"
+        test {
+            java.srcDirs += sharedTestDir
+            resources.srcDirs += sharedResourcesTestDir
+        }
+        androidTest {
+            java.srcDirs += sharedTestDir
+            resources.srcDirs += sharedResourcesTestDir
+        }
+    }
 }
 
 dependencies {
@@ -61,6 +73,12 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-library:${config.getAt("hamcrest")}"
     testCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
 
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
+    androidTestCompile "com.github.fabioCollini:DaggerMock:${config.getAt("daggermock")}"
+    androidTestCompile "org.mockito:mockito-core:${config.getAt("mockito")}"
+    androidTestCompile "com.crittercism.dexmaker:dexmaker:${config.getAt("dexmaker")}"
+    androidTestCompile "com.crittercism.dexmaker:dexmaker-mockito:${config.getAt("dexmaker")}"
+    androidTestCompile "com.crittercism.dexmaker:dexmaker-dx:${config.getAt("dexmaker")}"
     //Espresso dependencies
     androidTestCompile("com.android.support.test:runner:${config.getAt("support_testrunner")}") {
         exclude module: 'support-annotations'

@@ -20,20 +20,20 @@ public class MainActivityModule {
 
     @Provides
     @ActivityScope
-    MainActivity provideMainActivity() {
+    public MainActivity provideMainActivity() {
         return mainActivity;
     }
 
     @Provides
     @ActivityScope
-    MainPresenter provideMainActivityPresenter(
+    public MainPresenter provideMainActivityPresenter(
             final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
         return new MainPresenter(mainActivity, requestArticlesCommandBuilder);
     }
 
     @Provides
     @ActivityScope
-    MainContract.UserActions provideMainActivityUserActions(final MainPresenter mainPresenter) {
+    public MainContract.UserActions provideMainActivityUserActions(final MainPresenter mainPresenter) {
         return mainPresenter;
     }
 }

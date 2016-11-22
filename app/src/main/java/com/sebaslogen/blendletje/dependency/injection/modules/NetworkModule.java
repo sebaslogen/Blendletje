@@ -27,7 +27,7 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    ArticlesServer provideArticlesServer() {
+    public ArticlesServer provideArticlesServer() {
         return new ArticlesServer(mBaseUrl, mRxAdapter);
     }
 
