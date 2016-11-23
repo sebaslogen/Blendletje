@@ -9,7 +9,9 @@ import com.sebaslogen.blendletje.dependency.injection.components.CommandsCompone
 import com.sebaslogen.blendletje.dependency.injection.modules.CommandsModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.DatabaseModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
+import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.pages.MainPage;
+import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,14 +19,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.realm.RealmConfiguration;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.Scheduler;
 import rx.schedulers.Schedulers;
+import utils.MockDataProvider;
 
 import static org.mockito.Mockito.mock;
 import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
@@ -57,7 +60,7 @@ public class MainActivityTest {
 
     // Injected automatically by DaggerMockRule instead of @Provides methods
     @Mock
-    Scheduler mOIScheduler = Schedulers.immediate();
+    MainPresenter mMainPresenter;
 
     public MainActivityTest() throws IOException {
     }
@@ -65,8 +68,9 @@ public class MainActivityTest {
     @Test
     public void onOpen_loadingAnimationIsShown() throws Exception {
         // Given
+        final MainActivity mainActivity = activityTestRule.launchActivity(null);
         // When
-        activityTestRule.launchActivity(null);
+        mainActivity.runOnUiThread(mainActivity::showLoadingAnimation);
         // Then
         final MainPage mainPage = new MainPage();
         mainPage.checkLoadingAnimationIsShown();
@@ -74,12 +78,28 @@ public class MainActivityTest {
 
     @Test
     public void onDataLoaded_loadingAnimationDisappears() throws Exception {
-
+        // Given
+        final MainActivity mainActivity = activityTestRule.launchActivity(null);
+        // When
+        mainActivity.runOnUiThread(mainActivity::hideLoadingAnimation);
+        // Then
+        final MainPage mainPage = new MainPage();
+        mainPage.checkLoadingAnimationIsNotShown();
     }
 
     @Test
-    public void onOpen_listOfPopularArticlesIsShown() throws Exception {
-
+    public void onDataLoaded_listOfPopularArticlesIsShownWithArticle() throws Exception {
+        // Given
+        final MainActivity mainActivity = activityTestRule.launchActivity(null);
+        final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
+        // When
+        mainActivity.runOnUiThread(() -> {
+            mainActivity.displayPopularArticlesList(
+                    popularArticlesList);
+        });
+        // Then
+        final MainPage mainPage = new MainPage();
+        mainPage.checkArticleItemsAreShown(popularArticlesList);
     }
 
     // TODO: Add negative test cases and add hermetic unit test cases mocking layers below

@@ -5,11 +5,11 @@ import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.ui.activities.MainActivity;
 import com.sebaslogen.blendletje.ui.presenters.MainContract;
 import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
+import com.sebaslogen.blendletje.ui.utils.IOScheduler;
 
 import dagger.Module;
 import dagger.Provides;
 import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 @Module
 public class MainActivityModule {
@@ -41,7 +41,13 @@ public class MainActivityModule {
 
     @Provides
     @ActivityScope
-    public Scheduler provideIOScheduler() {
-        return Schedulers.io();
+    public IOScheduler provideIOScheduler() {
+        return new IOScheduler();
+    }
+
+    @Provides
+    @ActivityScope
+    public Scheduler provideRxJavaIOScheduler(final IOScheduler ioScheduler) {
+        return ioScheduler.get();
     }
 }

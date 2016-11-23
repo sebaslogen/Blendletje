@@ -73,12 +73,14 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-library:${config.getAt("hamcrest")}"
     testCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
 
-    androidTestCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
-    androidTestCompile "com.github.fabioCollini:DaggerMock:${config.getAt("daggermock")}"
     androidTestCompile "org.mockito:mockito-core:${config.getAt("mockito")}"
     androidTestCompile "com.github.crittercism.dexmaker:dexmaker:${config.getAt("dexmaker")}"
     androidTestCompile "com.github.crittercism.dexmaker:dexmaker-mockito:${config.getAt("dexmaker")}"
     androidTestCompile "com.github.crittercism.dexmaker:dexmaker-dx:${config.getAt("dexmaker")}"
+    androidTestCompile "org.hamcrest:hamcrest-library:${config.getAt("hamcrest")}"
+    androidTestCompile "org.hamcrest:hamcrest-core:${config.getAt("hamcrest")}"
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
+    androidTestCompile "com.github.fabioCollini:DaggerMock:${config.getAt("daggermock")}"
     //Espresso dependencies
     androidTestCompile("com.android.support.test:runner:${config.getAt("support_testrunner")}") {
         exclude module: 'support-annotations'

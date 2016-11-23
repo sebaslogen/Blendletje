@@ -1,6 +1,10 @@
 package com.sebaslogen.blendletje.ui.pages;
 
 import com.sebaslogen.blendletje.R;
+import com.sebaslogen.blendletje.domain.model.ListItem;
+import com.sebaslogen.blendletje.ui.recyclerview.RecyclerViewInteraction;
+
+import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -9,10 +13,11 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * This object represents the graphical user interface for the main screen (a.k.a. page)
- *
+ * <p>
  * Methods in this class abstract the actions a user can perform on this page
  * the flows the user can follow to other pages
  * and also the checks that can be done on this page
@@ -33,5 +38,16 @@ public class MainPage {
 
     public void checkLoadingAnimationIsShown() {
         onView(withId(R.id.iv_animation)).check(matches(isDisplayed()));
+    }
+
+    public void checkLoadingAnimationIsNotShown() {
+        onView(withId(R.id.iv_animation)).check(matches(not(isDisplayed())));
+    }
+
+    public void checkArticleItemsAreShown(final List<ListItem> popularArticlesList) {
+
+        RecyclerViewInteraction.<ListItem>onRecyclerView(withId(R.id.rv_popular_articles_list))
+                .withItems(popularArticlesList)
+                .check((listItem, view, e) -> matches(isDisplayed()));
     }
 }

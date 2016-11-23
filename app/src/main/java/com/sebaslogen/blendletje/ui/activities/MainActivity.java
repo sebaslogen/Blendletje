@@ -3,6 +3,8 @@ package com.sebaslogen.blendletje.ui.activities;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private ImageView mLoadAnimationView;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_toolbar);
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     }
 
     @Override
-    public void displayPopularArticlesList(final List<ListItem> popularArticlesList) {
+    public void displayPopularArticlesList(@NonNull final List<ListItem> popularArticlesList) {
         mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList));
     }
 }
