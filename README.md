@@ -17,6 +17,7 @@ Libraries
 - Gson
 - Halarious
 - AutoValue
+- Realm database
 - Dagger
 - Picasso
 - Mockito
