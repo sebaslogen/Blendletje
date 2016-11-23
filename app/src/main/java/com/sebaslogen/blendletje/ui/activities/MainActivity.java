@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     protected void onResume() {
         super.onResume();
         mUserActions.attachView();
-        showLoadingAnimation();
     }
 
     @Override
