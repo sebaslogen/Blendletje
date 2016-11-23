@@ -44,10 +44,15 @@ public class RequestArticlesCommand {
     }
 
     public Single<Article> getArticle(@NonNull final String id) {
-        final Single<ArticleResource> articleObservable = mArticlesServer
-                .requestArticle(id)
-                .doOnSuccess(mDatabaseManager::storeObject); // Single doesn't have doOnNext back-ported
+        final Single<ArticleResource> articleObservable = getArticleFromRemoteAPI(id);
         return articleObservable.map(ArticlesDataMapper::convertArticleToDomain);
+    }
+
+    @NonNull
+    private Single<ArticleResource> getArticleFromRemoteAPI(@NonNull final String id) {
+        return mArticlesServer
+                    .requestArticle(id)
+                    .doOnSuccess(mDatabaseManager::storeObject);
     }
 
     public static class RequestArticlesCommandBuilder
