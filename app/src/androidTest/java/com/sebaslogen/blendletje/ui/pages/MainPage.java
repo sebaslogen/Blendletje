@@ -36,10 +36,6 @@ public class MainPage {
                 .check(matches(isDisplayed()));
     }
 
-    public void checkLoadingAnimationIsShown() {
-        onView(withId(R.id.iv_animation)).check(matches(isDisplayed()));
-    }
-
     public void checkLoadingAnimationIsNotShown() {
         onView(withId(R.id.iv_animation)).check(matches(not(isDisplayed())));
     }

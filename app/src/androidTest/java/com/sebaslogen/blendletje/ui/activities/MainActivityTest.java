@@ -12,7 +12,10 @@ import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
 import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.pages.MainPage;
 import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
+import com.sebaslogen.blendletje.ui.utils.SystemAnimations;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +41,8 @@ public class MainActivityTest {
     private final MockWebServer mServer = new MockWebServer();
     private final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
             "popular(ws.blendle.com_items_popular).json");
+    private SystemAnimations mSystemAnimations;
+
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class,
             false,  // initialTouchMode
@@ -62,18 +67,19 @@ public class MainActivityTest {
     @Mock
     MainPresenter mMainPresenter;
 
-    public MainActivityTest() throws IOException {
+    @Before
+    public void setUp() throws Exception {
+        mSystemAnimations = new SystemAnimations(InstrumentationRegistry.getInstrumentation()
+                .getTargetContext());
+        mSystemAnimations.disableAll();
     }
 
-    @Test
-    public void onOpen_loadingAnimationIsShown() throws Exception {
-        // Given
-        final MainActivity mainActivity = activityTestRule.launchActivity(null);
-        // When
-        mainActivity.runOnUiThread(mainActivity::showLoadingAnimation);
-        // Then
-        final MainPage mainPage = new MainPage();
-        mainPage.checkLoadingAnimationIsShown();
+    @After
+    public void tearDown() throws Exception {
+        mSystemAnimations.enableAll();
+    }
+
+    public MainActivityTest() throws IOException {
     }
 
     @Test
