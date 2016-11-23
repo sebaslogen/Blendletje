@@ -5,11 +5,14 @@ import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.ui.activities.MainActivity;
 import com.sebaslogen.blendletje.ui.presenters.MainContract;
 import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
-import com.sebaslogen.blendletje.ui.utils.IOScheduler;
+
+import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
 import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 @Module
 public class MainActivityModule {
@@ -28,9 +31,10 @@ public class MainActivityModule {
 
     @Provides
     @ActivityScope
-    public MainPresenter provideMainActivityPresenter(final Scheduler ioScheduler,
+    public MainPresenter provideMainActivityPresenter(@Named("io") final Scheduler ioScheduler,
+                                                      @Named("ui") final Scheduler uiScheduler,
             final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
-        return new MainPresenter(mainActivity, ioScheduler, requestArticlesCommandBuilder);
+        return new MainPresenter(mainActivity, ioScheduler, uiScheduler, requestArticlesCommandBuilder);
     }
 
     @Provides
@@ -41,13 +45,15 @@ public class MainActivityModule {
 
     @Provides
     @ActivityScope
-    public IOScheduler provideIOScheduler() {
-        return new IOScheduler();
+    @Named("io")
+    public Scheduler provideRxJavaIOScheduler() {
+        return Schedulers.io();
     }
 
     @Provides
     @ActivityScope
-    public Scheduler provideRxJavaIOScheduler(final IOScheduler ioScheduler) {
-        return ioScheduler.get();
+    @Named("ui")
+    public Scheduler getUIScheduler() {
+        return AndroidSchedulers.mainThread();
     }
 }

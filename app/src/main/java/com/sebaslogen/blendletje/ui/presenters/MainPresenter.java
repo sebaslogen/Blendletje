@@ -7,9 +7,10 @@ import com.sebaslogen.blendletje.domain.model.ListItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Named;
+
 import rx.Scheduler;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.CompositeSubscription;
 import timber.log.Timber;
 
@@ -17,14 +18,17 @@ public class MainPresenter implements MainContract.UserActions {
 
     private final MainContract.ViewActions mViewActions;
     private final Scheduler mIOScheduler;
+    private final Scheduler mUIScheduler;
     private final CompositeSubscription mSubscriptions;
     private final RequestArticlesCommand.RequestArticlesCommandBuilder mRequestArticlesCommandBuilder;
 
     public MainPresenter(final MainContract.ViewActions viewActions,
-                         final Scheduler ioScheduler,
+                         @Named("io") final Scheduler ioScheduler,
+                         @Named("ui") final Scheduler uiScheduler,
                          final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
         mViewActions = viewActions;
         mIOScheduler = ioScheduler;
+        mUIScheduler = uiScheduler;
         mSubscriptions = new CompositeSubscription();
         mRequestArticlesCommandBuilder = requestArticlesCommandBuilder;
     }
@@ -46,7 +50,7 @@ public class MainPresenter implements MainContract.UserActions {
                 .getPopularArticles(null, null)
                 .map(this::addAdvertisements)
                 .subscribeOn(mIOScheduler)
-                .observeOn(getUIScheduler())
+                .observeOn(mUIScheduler)
                 .subscribe(this::showArticles,
                         throwable -> {
                             // TODO: Handle error loading in UI
@@ -64,10 +68,6 @@ public class MainPresenter implements MainContract.UserActions {
         }
         // TODO: Fill items list with advertisements
         return items;
-    }
-
-    Scheduler getUIScheduler() {
-        return AndroidSchedulers.mainThread();
     }
 
     private void showArticles(final List<ListItem> items) {

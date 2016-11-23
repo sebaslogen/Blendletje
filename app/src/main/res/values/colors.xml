@@ -6,4 +6,5 @@
     <color name="splashBackground">#FFFFFF</color>
     <color name="defaultBackground">#FFFFFF</color>
     <color name="article_title_background">#8C000000</color>
+    <color name="transparent">#00000000</color>
 </resources>

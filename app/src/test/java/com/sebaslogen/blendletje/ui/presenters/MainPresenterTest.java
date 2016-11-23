@@ -45,8 +45,7 @@ public class MainPresenterTest {
     public void onCreation_ListOfArticlesIsLoaded() throws IOException {
         // Given there is a presenter
         final MainPresenter presenter = spy(new MainPresenter(mViewActions, Schedulers.immediate(),
-                getMockedRequestCommandBuilder()));
-        doReturn(Schedulers.immediate()).when(presenter).getUIScheduler();
+                Schedulers.immediate(), getMockedRequestCommandBuilder()));
         // When the view is attached
         presenter.attachView();
         // Then

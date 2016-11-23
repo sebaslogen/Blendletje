@@ -5,4 +5,6 @@
     <dimen name="list_item_margin">8dp</dimen>
     <dimen name="list_item_corner_radius">6dp</dimen>
     <dimen name="list_item_title_padding">8dp</dimen>
+    <dimen name="spacing_medium">8dp</dimen>
+    <dimen name="spacing_large">16dp</dimen>
 </resources>

@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
@@ -44,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         setSupportActionBar(toolbar);
         mPopularArticlesRV = (RecyclerView) findViewById(R.id.rv_popular_articles_list);
         mPopularArticlesRV.setLayoutManager(new LinearLayoutManager(this));
-        mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>(), mImageLoader)); // This avoids layout errors
+        mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>(), mImageLoader,
+                (v, i, t, iU) -> null)); // This avoids layout errors
         mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
 
@@ -85,6 +87,19 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void displayPopularArticlesList(@NonNull final List<ListItem> popularArticlesList) {
-        mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList, mImageLoader));
+        // TODO: Use payload to notify changes instead of recreating
+        mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList, mImageLoader,
+                (view, id, title, imageUrl) -> {
+                    openArticle(view, id, title, imageUrl);
+                    return null;
+                }));
+    }
+
+    private void openArticle(final View view, final String id, final String title,
+                             @Nullable final String imageUrl) {
+        final ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
+        final TextView titleView = (TextView) view.findViewById(R.id.tv_title);
+        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, imageUrl);
+//        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, "https://static.blendle.nl/publication/newyorktimes/2016/11/22/item/36_1/version/1/image/large/3a7bcb130f14ad332178c95ee32440395bdd999d.jpg");
     }
 }

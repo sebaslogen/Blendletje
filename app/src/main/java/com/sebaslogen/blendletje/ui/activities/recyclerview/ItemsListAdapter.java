@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje.ui.activities.recyclerview;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 import java.util.List;
 
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Func4;
 
 import static com.sebaslogen.blendletje.ui.utils.TextUtils.getMarkupStrippedString;
 
@@ -32,17 +34,20 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final short VIEW_TYPE_ADVERTISEMENT = 1;
     private final List<ListItem> mItemsList;
     private final ImageLoader mImageLoader;
-    private int mLastPosition = -1; // Remember the last item shown on screen for animations
+    private final Func4<View, String, String, String, Void> mItemClick;
     private final DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
+    private int mLastPosition = -1; // Remember the last item shown on screen for animations
 
     /**
      * Constructor of an adapter for a list of items to bind and display in a recyclerView
      *
      * @param itemsList List of items
      */
-    public ItemsListAdapter(final List<ListItem> itemsList, final ImageLoader imageLoader) {
+    public ItemsListAdapter(final List<ListItem> itemsList, final ImageLoader imageLoader,
+                            final Func4<View, String, String, String, Void> itemClick) {
         mItemsList = itemsList;
         mImageLoader = imageLoader;
+        mItemClick = itemClick;
     }
 
     @Override
@@ -81,14 +86,12 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onViewDetachedFromWindow(final RecyclerView.ViewHolder holder)
-    {
-        ((ViewHolderAnimations)holder).clearAnimation();
+    public void onViewDetachedFromWindow(final RecyclerView.ViewHolder holder) {
+        ((ViewHolderAnimations) holder).clearAnimation();
     }
 
     private void setAnimation(final ViewHolderAnimations view, final int position) {
-        if (position > mLastPosition)
-        {
+        if (position > mLastPosition) {
             final Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.card_appears);
             animation.setStartOffset(300);
             animation.setInterpolator(mDecelerateInterpolator);
@@ -98,15 +101,20 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     private void bindArticleItem(final Article article, final ArticleItemViewHolder holder) {
-        holder.setTitle(article.contents().title());
+        final String title = article.contents().title();
+        holder.setTitle(title);
         final List<ArticleImage> images = article.images();
+        String imageUrl = null;
         if (images.isEmpty()) {
             holder.clearImage();
         } else {
             final ArticleImage articleImage = images.get(0);
             final ImageMetadata image = articleImage.large();
-            holder.setImage(image.url(), image.height(), articleImage.caption());
+            imageUrl = image.url();
+            holder.setImage(imageUrl, image.height(), articleImage.caption());
         }
+        holder.setClickAction(mItemClick, article.id(), title, imageUrl);
+
     }
 
     @Override
@@ -121,7 +129,9 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private interface ViewHolderAnimations {
         Context getContext();
+
         void startAnimation(Animation animation);
+
         void clearAnimation();
     }
 
@@ -158,6 +168,11 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     .into(mImage);
         }
 
+        void setClickAction(final Func4<View, String, String, String, Void> itemClick,
+                            final String id, final String title, @Nullable final String imageUrl) {
+            itemView.setOnClickListener(view -> itemClick.call(view, id, title, imageUrl));
+        }
+
         void clearImage() {
             mImageLoader.cancelRequest(mImage);
             mImage.setLayoutParams(mDefaultLayoutParams);
@@ -176,8 +191,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         @Override
-        public void clearAnimation()
-        {
+        public void clearAnimation() {
             mContainer.clearAnimation();
         }
     }
