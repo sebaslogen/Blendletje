@@ -1,5 +1,7 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
+import java.util.Objects;
+
 import io.realm.RealmModel;
 import io.realm.annotations.RealmClass;
 
@@ -46,9 +48,9 @@ public class ImageResource implements RealmModel {
         }
         if (o instanceof ImageResource) {
             final ImageResource that = (ImageResource) o;
-            return (this.href.equals(that.href()))
-                    && (this.width == that.width())
-                    && (this.height == that.height());
+            return (Objects.equals(href, that.href()))
+                    && (Objects.equals(width, that.width()))
+                    && (Objects.equals(height, that.height()));
         }
         return false;
     }

@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
 import java.util.List;
+import java.util.Objects;
 
 import ch.halarious.core.HalResource;
 import io.realm.RealmList;
@@ -51,9 +52,9 @@ public class ArticleManifestResource implements HalResource, RealmModel {
         }
         if (o instanceof ArticleManifestResource) {
             final ArticleManifestResource that = (ArticleManifestResource) o;
-            return (this.id.equals(that.id()))
-                    && (this.body.equals(that.body()))
-                    && (this.images.equals(that.images()));
+            return (Objects.equals(id, that.id()))
+                    && (Objects.equals(body, that.body()))
+                    && (Objects.equals(images, that.images()));
         }
         return false;
     }

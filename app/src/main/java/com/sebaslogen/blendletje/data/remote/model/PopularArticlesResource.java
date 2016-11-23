@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
 import java.util.List;
+import java.util.Objects;
 
 import ch.halarious.core.HalEmbedded;
 import ch.halarious.core.HalLink;
@@ -62,10 +63,10 @@ public class PopularArticlesResource implements HalResource, RealmModel {
         }
         if (o instanceof PopularArticlesResource) {
             final PopularArticlesResource that = (PopularArticlesResource) o;
-            return (this.self.equals(that.self()))
-                    && (this.prev.equals(that.prev()))
-                    && (this.next.equals(that.next()))
-                    && (this.items.equals(that.items()));
+            return (Objects.equals(self, that.self()))
+                    && (Objects.equals(prev, that.prev()))
+                    && (Objects.equals(next, that.next()))
+                    && (Objects.equals(items, that.items()));
         }
         return false;
     }

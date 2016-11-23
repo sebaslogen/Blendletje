@@ -1,5 +1,7 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
+import java.util.Objects;
+
 import io.realm.RealmModel;
 import io.realm.annotations.RealmClass;
 
@@ -39,8 +41,8 @@ public class ArticleBodyItemResource implements RealmModel {
         }
         if (o instanceof ArticleBodyItemResource) {
             final ArticleBodyItemResource that = (ArticleBodyItemResource) o;
-            return (this.type.equals(that.type()))
-                    && (this.content.equals(that.content()));
+            return (Objects.equals(type, that.type()))
+                    && (Objects.equals(content, that.content()));
         }
         return false;
     }

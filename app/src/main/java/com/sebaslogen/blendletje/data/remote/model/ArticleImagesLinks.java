@@ -1,5 +1,7 @@
 package com.sebaslogen.blendletje.data.remote.model;
 
+import java.util.Objects;
+
 import io.realm.RealmModel;
 import io.realm.annotations.RealmClass;
 
@@ -47,9 +49,9 @@ public class ArticleImagesLinks implements RealmModel {
         }
         if (o instanceof ArticleImagesLinks) {
             final ArticleImagesLinks that = (ArticleImagesLinks) o;
-            return (this.small.equals(that.small()))
-                    && (this.medium.equals(that.medium()))
-                    && (this.large.equals(that.large()));
+            return (Objects.equals(small, that.small()))
+                    && (Objects.equals(medium, that.medium()))
+                    && (Objects.equals(large, that.large()));
         }
         return false;
     }
