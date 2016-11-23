@@ -41,7 +41,7 @@ _Note: Make sure to connect a phone to the computer or start an emulator before 
 
 Continuous integration environment
 ============
-Builds are triggered and build automatically on every commit to git repository.
+Builds are triggered and automatically built on every commit to git repository, executing all unit and instrumentation tests.
 Build history and reports can be accessed here: https://travis-ci.org/sebaslogen/Blendletje/builds
 
 License

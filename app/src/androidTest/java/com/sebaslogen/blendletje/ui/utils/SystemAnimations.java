@@ -58,7 +58,7 @@ public final class SystemAnimations extends AndroidJUnitRunner {
             }
             setAnimationScales.invoke(windowManagerObj, new Object[]{currentScales});
         } catch (final Exception e) {
-            Timber.e("Could not change animation scale to " + animationScale + " :'(");
+            Timber.e("Could not change animation scale to %s :'(", animationScale);
         }
     }
 }
