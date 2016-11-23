@@ -13,6 +13,16 @@ public class ArticleManifestResource implements HalResource, RealmModel {
     private RealmList<ArticleBodyItemResource> body = new RealmList<>();
     private RealmList<ArticleImagesContainer> images = new RealmList<>();
 
+    public ArticleManifestResource() {
+    }
+
+    public ArticleManifestResource(final String id, final RealmList<ArticleBodyItemResource> body,
+                                   final RealmList<ArticleImagesContainer> images) {
+        this.id = id;
+        this.body = body;
+        this.images = images;
+    }
+
     public String id() {
         return id;
     }

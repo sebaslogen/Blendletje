@@ -8,6 +8,14 @@ public class ArticleImagesContainer implements RealmModel {
     private ArticleImagesLinks _links;
     private String caption;
 
+    public ArticleImagesContainer() {
+    }
+
+    public ArticleImagesContainer(final ArticleImagesLinks _links, final String caption) {
+        this._links = _links;
+        this.caption = caption;
+    }
+
     public ArticleImagesLinks _links() {
         return _links;
     }

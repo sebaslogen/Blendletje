@@ -14,6 +14,15 @@ public class ArticleResource implements HalResource, RealmModel {
     @HalEmbedded
     private ArticleManifestResource manifest;
 
+    public ArticleResource() {
+    }
+
+    public ArticleResource(final String self, final String id, final ArticleManifestResource manifest) {
+        this.self = self;
+        this.id = id;
+        this.manifest = manifest;
+    }
+
     public String self() {
         return self;
     }

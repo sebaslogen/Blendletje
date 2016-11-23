@@ -8,7 +8,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
-import rx.Single;
 
 public interface BlendleAPI {
 
@@ -22,5 +21,5 @@ public interface BlendleAPI {
                                                                   @Query("page") Integer page);
 
     @GET("item/{id}")
-    Single<ArticleResource> articlesObservable(@Path("id") String id);
+    Observable<ArticleResource> articlesObservable(@Path("id") String id);
 }

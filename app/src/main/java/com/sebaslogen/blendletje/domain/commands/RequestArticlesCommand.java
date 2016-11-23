@@ -13,7 +13,6 @@ import com.sebaslogen.blendletje.domain.model.Article;
 import java.util.List;
 
 import rx.Observable;
-import rx.Single;
 
 /**
  * Command class to handle article requests to different data sources
@@ -43,32 +42,36 @@ public class RequestArticlesCommand {
         return popularArticlesObservable.map(ArticlesDataMapper::convertPopularArticlesListToDomain);
     }
 
-    public Single<Article> getArticle(@NonNull final String id) {
-        final Single<ArticleResource> articleObservable = getArticleFromRemoteAPI(id);
+    public Observable<Article> getArticle(@NonNull final String id) {
+        final Observable<ArticleResource> remoteArticleObservable = getArticleFromRemoteAPI(id);
+        final Observable<ArticleResource> localDBArticleObservable = getArticleFromLocalDB(id);
+        final Observable<ArticleResource> articleObservable = Observable
+                .concat(localDBArticleObservable, remoteArticleObservable).first();
         return articleObservable.map(ArticlesDataMapper::convertArticleToDomain);
     }
 
-    @NonNull
-    private Single<ArticleResource> getArticleFromRemoteAPI(@NonNull final String id) {
-        return mArticlesServer
-                    .requestArticle(id)
-                    .doOnSuccess(mDatabaseManager::storeObject);
+    private Observable<ArticleResource> getArticleFromLocalDB(@NonNull final String id) {
+        return mDatabaseManager.requestArticle(id);
     }
 
-    public static class RequestArticlesCommandBuilder
-    {
+    @NonNull
+    private Observable<ArticleResource> getArticleFromRemoteAPI(@NonNull final String id) {
+        return mArticlesServer
+                .requestArticle(id)
+                .doOnNext(mDatabaseManager::storeObject);
+    }
+
+    public static class RequestArticlesCommandBuilder {
         private final ArticlesServer mArticlesServer;
         private final DatabaseManager mDatabaseManager;
 
         public RequestArticlesCommandBuilder(final ArticlesServer articlesServer,
-                                             final DatabaseManager databaseManager)
-        {
+                                             final DatabaseManager databaseManager) {
             mArticlesServer = articlesServer;
             mDatabaseManager = databaseManager;
         }
 
-        public RequestArticlesCommand createRequestArticlesCommand()
-        {
+        public RequestArticlesCommand createRequestArticlesCommand() {
             return new RequestArticlesCommand(mArticlesServer, mDatabaseManager);
         }
     }

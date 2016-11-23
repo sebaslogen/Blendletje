@@ -15,7 +15,6 @@ import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
-import rx.Single;
 
 public class ArticlesServer implements ArticlesDataSource {
 
@@ -57,7 +56,7 @@ public class ArticlesServer implements ArticlesDataSource {
     }
 
     @Override
-    public Single<ArticleResource> requestArticle(@NonNull final String id) {
+    public Observable<ArticleResource> requestArticle(@NonNull final String id) {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .addConverterFactory(HALConverterFactory.create(ArticleResource.class))

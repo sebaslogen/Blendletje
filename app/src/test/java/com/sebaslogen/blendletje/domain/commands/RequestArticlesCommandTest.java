@@ -17,7 +17,6 @@ import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
-import rx.Single;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -26,6 +25,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
@@ -54,7 +55,7 @@ public class RequestArticlesCommandTest {
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                         createWithScheduler(Schedulers.immediate())),
-                mock(DatabaseManager.class));
+                mock(DatabaseManager.class)); // TODO: Stub DatabaseManager
         final Observable<List<Article>> popularArticlesObservable = command.getPopularArticles(null, null);
         final TestSubscriber<List<Article>> testSubscriber = new TestSubscriber<>();
         popularArticlesObservable.subscribe(testSubscriber);
@@ -74,7 +75,7 @@ public class RequestArticlesCommandTest {
                 "popular(ws.blendle.com_items_popular).json");
 
         // When I make a request
-        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        final DatabaseManager databaseManager = mock(DatabaseManager.class); // TODO: Stub DatabaseManager
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                         createWithScheduler(Schedulers.immediate())),databaseManager);
@@ -93,13 +94,15 @@ public class RequestArticlesCommandTest {
         final String articleId = "bnl-vkn-20161117-7352758";
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "article(ws.blendle.com_item_" + articleId + ").json");
+        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        doReturn(Observable.empty()).when(databaseManager).requestArticle(anyString());
 
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                         createWithScheduler(Schedulers.immediate())),
-                mock(DatabaseManager.class));
-        final Single<Article> articleObservable = command.getArticle(articleId);
+                databaseManager);
+        final Observable<Article> articleObservable = command.getArticle(articleId);
         final TestSubscriber<Article> testSubscriber = new TestSubscriber<>();
         articleObservable.subscribe(testSubscriber);
 
@@ -117,13 +120,14 @@ public class RequestArticlesCommandTest {
         final String articleId = "bnl-vkn-20161117-7352758";
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "article(ws.blendle.com_item_" + articleId + ").json");
+        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        doReturn(Observable.empty()).when(databaseManager).requestArticle(anyString());
 
         // When I make a request
-        final DatabaseManager databaseManager = mock(DatabaseManager.class);
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                        createWithScheduler(Schedulers.immediate())),databaseManager);
-        final Single<Article> articleObservable = command.getArticle(articleId);
+                        createWithScheduler(Schedulers.immediate())), databaseManager);
+        final Observable<Article> articleObservable = command.getArticle(articleId);
         final TestSubscriber<Article> testSubscriber = new TestSubscriber<>();
         articleObservable.subscribe(testSubscriber);
 

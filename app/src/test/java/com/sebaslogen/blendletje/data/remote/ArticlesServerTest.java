@@ -14,7 +14,6 @@ import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
-import rx.Single;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -85,7 +84,7 @@ public class ArticlesServerTest {
         // When I make a request
         final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                 createWithScheduler(Schedulers.immediate()));
-        final Single<ArticleResource> articleObservable = articlesServer
+        final Observable<ArticleResource> articleObservable = articlesServer
                 .requestArticle(articleId);
         final TestSubscriber<ArticleResource> testSubscriber = new TestSubscriber<>();
         articleObservable.subscribe(testSubscriber);

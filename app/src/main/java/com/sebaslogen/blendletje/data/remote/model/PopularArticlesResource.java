@@ -20,6 +20,17 @@ public class PopularArticlesResource implements HalResource, RealmModel {
     @HalEmbedded
     private RealmList<ArticleResource> items = new RealmList<>();
 
+    public PopularArticlesResource() {
+    }
+
+    public PopularArticlesResource(final String self, final String prev, final String next,
+                                   final RealmList<ArticleResource> items) {
+        this.self = self;
+        this.prev = prev;
+        this.next = next;
+        this.items = items;
+    }
+
     public String self() {
         return self;
     }

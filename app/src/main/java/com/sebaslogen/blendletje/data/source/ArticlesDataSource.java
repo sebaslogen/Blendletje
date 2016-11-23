@@ -9,7 +9,6 @@ import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import java.io.IOException;
 
 import rx.Observable;
-import rx.Single;
 
 public interface ArticlesDataSource {
 
@@ -18,5 +17,5 @@ public interface ArticlesDataSource {
     Observable<PopularArticlesResource> requestPopularArticles(@Nullable Integer amount,
                                                                @Nullable Integer page);
 
-    Single<ArticleResource> requestArticle(@NonNull String id);
+    Observable<ArticleResource> requestArticle(@NonNull String id);
 }

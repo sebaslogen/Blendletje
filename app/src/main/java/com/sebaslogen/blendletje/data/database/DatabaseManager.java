@@ -13,7 +13,6 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import rx.Observable;
-import rx.Single;
 import rx.functions.Func0;
 
 /**
@@ -67,7 +66,7 @@ public class DatabaseManager implements ArticlesDataSource {
     }
 
     @Override
-    public Single<ArticleResource> requestArticle(@NonNull final String id) {
+    public Observable<ArticleResource> requestArticle(@NonNull final String id) {
         final Realm realm = mDatabaseGetter.call();
         return realm.where(ArticleResource.class)
                 .equalTo("id", id) // Search and find object in DB
@@ -76,7 +75,7 @@ public class DatabaseManager implements ArticlesDataSource {
                 .filter(RealmResults::isLoaded)
                 .map(realm::copyFromRealm) // Copy as immutable value
                 .filter(articles -> !articles.isEmpty()).take(1) // Filter empty results
-                .map(articles -> articles.get(0)).toSingle() // Return only one
+                .map(articles -> articles.get(0)) // Return only one
                 .doOnUnsubscribe(realm::close);
     }
 }

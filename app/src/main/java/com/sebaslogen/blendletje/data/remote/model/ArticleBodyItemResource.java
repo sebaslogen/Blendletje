@@ -8,6 +8,14 @@ public class ArticleBodyItemResource implements RealmModel {
     private String type;
     private String content;
 
+    public ArticleBodyItemResource() {
+    }
+
+    public ArticleBodyItemResource(final String type, final String content) {
+        this.type = type;
+        this.content = content;
+    }
+
     public String type() {
         return type;
     }

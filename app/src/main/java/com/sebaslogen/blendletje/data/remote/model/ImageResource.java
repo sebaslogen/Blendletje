@@ -9,6 +9,15 @@ public class ImageResource implements RealmModel {
     private int width;
     private int height;
 
+    public ImageResource() {
+    }
+
+    public ImageResource(final String href, final int width, final int height) {
+        this.href = href;
+        this.width = width;
+        this.height = height;
+    }
+
     public String href() {
         return href;
     }

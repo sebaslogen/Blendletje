@@ -9,6 +9,16 @@ public class ArticleImagesLinks implements RealmModel {
     private ImageResource medium;
     private ImageResource large;
 
+    public ArticleImagesLinks() {
+    }
+
+    public ArticleImagesLinks(final ImageResource small, final ImageResource medium,
+                              final ImageResource large) {
+        this.small = small;
+        this.medium = medium;
+        this.large = large;
+    }
+
     public ImageResource small() {
         return small;
     }
