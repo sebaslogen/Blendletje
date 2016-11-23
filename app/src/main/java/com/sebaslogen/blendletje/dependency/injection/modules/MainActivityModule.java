@@ -8,6 +8,8 @@ import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
 
 import dagger.Module;
 import dagger.Provides;
+import rx.Scheduler;
+import rx.schedulers.Schedulers;
 
 @Module
 public class MainActivityModule {
@@ -26,14 +28,20 @@ public class MainActivityModule {
 
     @Provides
     @ActivityScope
-    public MainPresenter provideMainActivityPresenter(
+    public MainPresenter provideMainActivityPresenter(final Scheduler ioScheduler,
             final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
-        return new MainPresenter(mainActivity, requestArticlesCommandBuilder);
+        return new MainPresenter(mainActivity, ioScheduler, requestArticlesCommandBuilder);
     }
 
     @Provides
     @ActivityScope
     public MainContract.UserActions provideMainActivityUserActions(final MainPresenter mainPresenter) {
         return mainPresenter;
+    }
+
+    @Provides
+    @ActivityScope
+    public Scheduler provideIOScheduler() {
+        return Schedulers.io();
     }
 }

@@ -11,7 +11,7 @@ ext {
     espresso = '2.2.2'
     support_testrunner = '0.5'
     mockito = '1.10.19'
-    dexmaker = '1.4'
+    dexmaker = 'b0ac1c73a9530909a5ad4cbe03859e11eada0b06' // Official version is not updated: http://tinyurl.com/hmatz5m
     daggermock = '0.6.2'
     hamcrest = '1.1'
     dagger = '2.7'

@@ -42,8 +42,8 @@ public class MainPresenterTest {
     @Test
     public void onCreation_ListOfArticlesIsLoaded() throws IOException {
         // Given there is a presenter
-        final MainPresenter presenter = spy(new MainPresenter(mViewActions, getMockedRequestCommandBuilder()));
-        doReturn(Schedulers.immediate()).when(presenter).getIOScheduler();
+        final MainPresenter presenter = spy(new MainPresenter(mViewActions, Schedulers.immediate(),
+                getMockedRequestCommandBuilder()));
         doReturn(Schedulers.immediate()).when(presenter).getUIScheduler();
         // When the view is attached
         presenter.attachView();
@@ -62,4 +62,5 @@ public class MainPresenterTest {
                 .RequestArticlesCommandBuilder(articlesServer, mock(DatabaseManager.class));
     }
 
+    // TODO: Add negative test cases and add hermetic unit test cases mocking layers below
 }

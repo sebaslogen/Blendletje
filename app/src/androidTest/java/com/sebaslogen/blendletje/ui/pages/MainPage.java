@@ -30,4 +30,8 @@ public class MainPage {
                 withText(R.string.popular_articles_title)))
                 .check(matches(isDisplayed()));
     }
+
+    public void checkLoadingAnimationIsShown() {
+        onView(withId(R.id.iv_animation)).check(matches(isDisplayed()));
+    }
 }

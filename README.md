@@ -28,6 +28,7 @@ Patterns
 - Model view presenter
 - Dependency inversion and dependency injection
 - Continuous integration
+- Page Object Pattern
 
 
 Running the project and the tests
@@ -37,6 +38,11 @@ Open the project in Android Studio and select the gradle task '**installDebug**'
 To run all the tests from the command line execute ```./gradlew check connectedCheck``` from the project's folder.
 
 _Note: Make sure to connect a phone to the computer or start an emulator before running the tests._
+
+Continuous integration environment
+============
+Builds are triggered and build automatically on every commit to git repository.
+Build history and reports can be accessed here: https://travis-ci.org/sebaslogen/Blendletje/builds
 
 License
 -------

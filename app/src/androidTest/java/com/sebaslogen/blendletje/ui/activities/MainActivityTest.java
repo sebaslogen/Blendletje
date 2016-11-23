@@ -14,6 +14,7 @@ import com.sebaslogen.blendletje.ui.pages.MainPage;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import java.io.IOException;
 
@@ -22,6 +23,7 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 import static org.mockito.Mockito.mock;
@@ -33,12 +35,10 @@ public class MainActivityTest {
     private final MockWebServer mServer = new MockWebServer();
     private final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
             "popular(ws.blendle.com_items_popular).json");
-
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class,
             false,  // initialTouchMode
             false); // launchActivity: false to set intent per test
-
     @Rule
     public DaggerMockRule<CommandsComponent> daggerRule =
             new DaggerMockRule<>(CommandsComponent.class,
@@ -55,13 +55,21 @@ public class MainActivityTest {
                                 app.setComponent(component);
                             });
 
+    // Injected automatically by DaggerMockRule instead of @Provides methods
+    @Mock
+    Scheduler mOIScheduler = Schedulers.immediate();
+
     public MainActivityTest() throws IOException {
     }
 
     @Test
     public void onOpen_loadingAnimationIsShown() throws Exception {
+        // Given
+        // When
         activityTestRule.launchActivity(null);
-        new MainPage();
+        // Then
+        final MainPage mainPage = new MainPage();
+        mainPage.checkLoadingAnimationIsShown();
     }
 
     @Test
@@ -74,4 +82,5 @@ public class MainActivityTest {
 
     }
 
+    // TODO: Add negative test cases and add hermetic unit test cases mocking layers below
 }

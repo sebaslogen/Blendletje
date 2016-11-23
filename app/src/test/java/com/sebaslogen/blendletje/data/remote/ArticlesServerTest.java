@@ -71,4 +71,6 @@ public class ArticlesServerTest {
         final PopularArticlesResource popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.items().size(), greaterThan(0));
     }
+
+    // TODO: Add negative test cases
 }

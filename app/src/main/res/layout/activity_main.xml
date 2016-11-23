@@ -15,7 +15,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="center"
         android:contentDescription="@string/animated_image_description"
-        android:src="@drawable/animated_blendle_logo"/>
+        android:src="@drawable/animated_blendle_logo"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_popular_articles_list"

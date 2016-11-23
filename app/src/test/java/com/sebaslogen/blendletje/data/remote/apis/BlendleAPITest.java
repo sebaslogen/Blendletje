@@ -63,4 +63,6 @@ public class BlendleAPITest {
         assertThat("No images information loaded for first article", firstArticle.manifest().images().size(), greaterThan(0));
         assertNotNull("No small image information loaded for first article", firstArticle.manifest().images().get(0)._links().small());
     }
+
+    // TODO: Add negative test cases
 }
