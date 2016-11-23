@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -50,12 +51,14 @@ public class RequestArticlesCommandTest {
         // Given there is a web server with some prepared responses
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
+        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        doReturn(Observable.empty()).when(databaseManager).requestPopularArticles(anyInt(), anyInt());
 
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                         createWithScheduler(Schedulers.immediate())),
-                mock(DatabaseManager.class)); // TODO: Stub DatabaseManager
+                databaseManager);
         final Observable<List<Article>> popularArticlesObservable = command.getPopularArticles(null, null);
         final TestSubscriber<List<Article>> testSubscriber = new TestSubscriber<>();
         popularArticlesObservable.subscribe(testSubscriber);
@@ -73,9 +76,10 @@ public class RequestArticlesCommandTest {
         // Given there is a web server with some prepared responses
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
+        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        doReturn(Observable.empty()).when(databaseManager).requestPopularArticles(anyInt(), anyInt());
 
         // When I make a request
-        final DatabaseManager databaseManager = mock(DatabaseManager.class); // TODO: Stub DatabaseManager
         final RequestArticlesCommand command = new RequestArticlesCommand(
                 new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                         createWithScheduler(Schedulers.immediate())),databaseManager);

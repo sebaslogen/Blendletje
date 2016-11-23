@@ -13,6 +13,7 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
 import rx.Observable;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Func0;
 
 /**
@@ -56,26 +57,37 @@ public class DatabaseManager implements ArticlesDataSource {
 
     @Override
     public PopularArticlesResource requestPopularArticles() throws IOException {
-        return null; // TODO: Implement
+        throw new OnErrorNotImplementedException(new Throwable("TODO: implement for not Rx clients"));
     }
 
     @Override
     public Observable<PopularArticlesResource> requestPopularArticles(@Nullable final Integer amount,
                                                                       @Nullable final Integer page) {
-        return null; // TODO: Implement
+        return Observable.fromCallable((Func0<PopularArticlesResource>) () -> {
+            try (Realm realm = mDatabaseGetter.call()) {
+                RealmResults<PopularArticlesResource> popularArticlesResources =
+                        realm.where(PopularArticlesResource.class).findAll();
+                if (popularArticlesResources.isEmpty()) {
+                    return null;
+                }
+                return realm.copyFromRealm(popularArticlesResources).get(0); // Copy as immutable value
+            }
+        }).filter(popularArticlesResource -> popularArticlesResource != null);
     }
 
     @Override
     public Observable<ArticleResource> requestArticle(@NonNull final String id) {
-        final Realm realm = mDatabaseGetter.call();
-        return realm.where(ArticleResource.class)
-                .equalTo("id", id) // Search and find object in DB
-                .findAllAsync()
-                .asObservable()
-                .filter(RealmResults::isLoaded)
-                .map(realm::copyFromRealm) // Copy as immutable value
-                .filter(articles -> !articles.isEmpty()).take(1) // Filter empty results
-                .map(articles -> articles.get(0)) // Return only one
-                .doOnUnsubscribe(realm::close);
+        return Observable.fromCallable((Func0<ArticleResource>) () -> {
+            try (Realm realm = mDatabaseGetter.call()) {
+                RealmResults<ArticleResource> articleResources =
+                        realm.where(ArticleResource.class)
+                                .equalTo("id", id) // Search and find object in DB
+                                .findAll();
+                if (articleResources.isEmpty()) {
+                    return null;
+                }
+                return realm.copyFromRealm(articleResources).get(0); // Copy as immutable value
+            }
+        }).filter(popularArticlesResource -> popularArticlesResource != null);
     }
 }

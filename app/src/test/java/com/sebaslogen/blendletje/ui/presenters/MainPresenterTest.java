@@ -14,8 +14,10 @@ import java.io.IOException;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 
+import static org.mockito.Matchers.anyInt;
 import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.doReturn;
@@ -55,11 +57,13 @@ public class MainPresenterTest {
             throws IOException {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
+        final DatabaseManager databaseManager = mock(DatabaseManager.class);
+        doReturn(Observable.empty()).when(databaseManager).requestPopularArticles(anyInt(), anyInt());
 
         final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
                 createWithScheduler(Schedulers.immediate()));
         return new RequestArticlesCommand
-                .RequestArticlesCommandBuilder(articlesServer, mock(DatabaseManager.class));
+                .RequestArticlesCommandBuilder(articlesServer, databaseManager);
     }
 
     // TODO: Add negative test cases and add hermetic unit test cases mocking layers below

@@ -10,13 +10,14 @@ import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.domain.mappers.ArticlesDataMapper;
 import com.sebaslogen.blendletje.domain.model.Article;
 
+import java.net.UnknownHostException;
 import java.util.List;
 
 import rx.Observable;
 
 /**
  * Command class to handle article requests to different data sources
- * This class behavior is asking local database for data and in the meanwhile
+ * The behavior is to ask local database for data and in the meanwhile
  * update data from the network if possible
  */
 public class RequestArticlesCommand {
@@ -34,14 +35,54 @@ public class RequestArticlesCommand {
         mDatabaseManager = databaseManager;
     }
 
+    /**
+     * This method retrieves an observable that emits lists of popular articles
+     * Data is fetched first from the database until the first data is received from the network
+     * In the case there are network errors the errors will be ignored and local data wil be emitted
+     * The resulting data is mapped from teh remote/database layers to the domain layer requirements
+     *
+     * @param amount Number of articles to fetch
+     * @param page   Number of the page of results to fetch
+     * @return An observable that will emit lists of articles, usually one from DB and one from network
+     */
     public Observable<List<Article>> getPopularArticles(@Nullable final Integer amount,
                                                         @Nullable final Integer page) {
-        final Observable<PopularArticlesResource> popularArticlesObservable = mArticlesServer
-                .requestPopularArticles(amount, page)
-                .doOnNext(mDatabaseManager::storeObject);
-        return popularArticlesObservable.map(ArticlesDataMapper::convertPopularArticlesListToDomain);
+        final Observable<PopularArticlesResource>
+                remotePopularArticlesObservable = getPopularArticlesFromRemoteAPI(amount, page);
+        final Observable<PopularArticlesResource>
+                localDBPopularArticlesObservable = getPopularArticlesFromLocalDB(amount, page);
+        final Observable<PopularArticlesResource> popularArticlesObservable =
+                remotePopularArticlesObservable.publish(remotePopularArticles ->
+                        Observable.merge(remotePopularArticles, // Merge network and local
+                                localDBPopularArticlesObservable // but stop local as soon as network emits
+                                        .takeUntil(remotePopularArticles)))
+                        .onErrorResumeNext(throwable -> (throwable instanceof UnknownHostException) ?
+                                localDBPopularArticlesObservable : Observable.error(throwable)); // Ignore network problems
+        return popularArticlesObservable
+                .distinct() // Avoid emitting twice when the network is down
+                .map(ArticlesDataMapper::convertPopularArticlesListToDomain); // Map data to domain
     }
 
+    private Observable<PopularArticlesResource> getPopularArticlesFromLocalDB(final Integer amount,
+                                                                              final Integer page) {
+        return mDatabaseManager.requestPopularArticles(amount, page);
+    }
+
+    @NonNull
+    private Observable<PopularArticlesResource> getPopularArticlesFromRemoteAPI(
+            @Nullable final Integer amount, @Nullable final Integer page) {
+        return mArticlesServer
+                .requestPopularArticles(amount, page)
+                .doOnNext(mDatabaseManager::storeObject);
+    }
+
+    /**
+     * This method retrieves an observable that emits the requested article if available or error otherwise
+     * Data is fetch first from the database and, only if data is not available, it's requested from the network
+     *
+     * @param id Unique identifier of the requested article
+     * @return An observable that will emit one article or error if not found locally neither remotely
+     */
     public Observable<Article> getArticle(@NonNull final String id) {
         final Observable<ArticleResource> remoteArticleObservable = getArticleFromRemoteAPI(id);
         final Observable<ArticleResource> localDBArticleObservable = getArticleFromLocalDB(id);
