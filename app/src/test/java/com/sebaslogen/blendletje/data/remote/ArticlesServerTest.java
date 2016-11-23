@@ -1,5 +1,6 @@
 package com.sebaslogen.blendletje.data.remote;
 
+import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 
 import org.junit.After;
@@ -13,13 +14,15 @@ import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
+import rx.Single;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 
 public class ArticlesServerTest {
 
@@ -70,6 +73,29 @@ public class ArticlesServerTest {
         assertTrue("There should only one event with the request results", events.size() == 1);
         final PopularArticlesResource popularArticles = events.get(0);
         assertThat("No articles loaded", popularArticles.items().size(), greaterThan(0));
+    }
+
+    @Test
+    public void requestArticleObservable_returnsObjectWithArticle() throws Exception {
+        // Given there is a web server with some prepared responses
+        final String articleId = "bnl-vkn-20161117-7352758";
+        final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
+                "article(ws.blendle.com_item_" + articleId + ").json");
+
+        // When I make a request
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
+                createWithScheduler(Schedulers.immediate()));
+        final Single<ArticleResource> articleObservable = articlesServer
+                .requestArticle(articleId);
+        final TestSubscriber<ArticleResource> testSubscriber = new TestSubscriber<>();
+        articleObservable.subscribe(testSubscriber);
+
+        // Then the request is correctly received
+        final List<ArticleResource> events = testSubscriber.getOnNextEvents();
+        testSubscriber.assertNoErrors();
+        assertTrue("There should only one event with the request results", events.size() == 1);
+        final ArticleResource article = events.get(0);
+        assertEquals(articleId, article.id());
     }
 
     // TODO: Add negative test cases

@@ -36,13 +36,19 @@ public class ArticlesDataMapper {
         if (articleResources != null) {
             //noinspection Convert2streamapi
             for (final ArticleResource articleResource : articleResources) {
-                articles.add(extractArticle(articleResource));
+                articles.add(convertArticleToDomain(articleResource));
             }
         }
         return articles;
     }
 
-    private static Article extractArticle(final ArticleResource articleResource) {
+    /**
+     * Map an article from the data layer into an articles in the domain layer
+     *
+     * @param articleResource Object containing the article from the data layer
+     * @return An article with only the required information for this application's domain and UI
+     */
+    public static Article convertArticleToDomain(final ArticleResource articleResource) {
         final String id = articleResource.id();
         return Article.create(id, extractContents(articleResource), extractImages(articleResource));
     }

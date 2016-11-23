@@ -1,8 +1,10 @@
 package com.sebaslogen.blendletje.data.remote;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.sebaslogen.blendletje.data.remote.apis.BlendleAPI;
+import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
 
@@ -13,6 +15,7 @@ import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
+import rx.Single;
 
 public class ArticlesServer implements ArticlesDataSource {
 
@@ -51,5 +54,16 @@ public class ArticlesServer implements ArticlesDataSource {
                 .build();
         final BlendleAPI blendleAPI = retrofit.create(BlendleAPI.class);
         return blendleAPI.popularArticlesObservable(amount, page);
+    }
+
+    @Override
+    public Single<ArticleResource> requestArticle(@NonNull final String id) {
+        final Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(mBaseUrl)
+                .addConverterFactory(HALConverterFactory.create(ArticleResource.class))
+                .addCallAdapterFactory(mRxAdapter)
+                .build();
+        final BlendleAPI blendleAPI = retrofit.create(BlendleAPI.class);
+        return blendleAPI.articlesObservable(id);
     }
 }

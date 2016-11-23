@@ -1,9 +1,11 @@
 package com.sebaslogen.blendletje.domain.commands;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.sebaslogen.blendletje.data.database.DatabaseManager;
 import com.sebaslogen.blendletje.data.remote.ArticlesServer;
+import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.domain.mappers.ArticlesDataMapper;
 import com.sebaslogen.blendletje.domain.model.Article;
@@ -11,6 +13,7 @@ import com.sebaslogen.blendletje.domain.model.Article;
 import java.util.List;
 
 import rx.Observable;
+import rx.Single;
 
 /**
  * Command class to handle article requests to different data sources
@@ -38,6 +41,13 @@ public class RequestArticlesCommand {
                 .requestPopularArticles(amount, page)
                 .doOnNext(mDatabaseManager::storeObject);
         return popularArticlesObservable.map(ArticlesDataMapper::convertPopularArticlesListToDomain);
+    }
+
+    public Single<Article> getArticle(@NonNull final String id) {
+        final Single<ArticleResource> articleObservable = mArticlesServer
+                .requestArticle(id)
+                .doOnSuccess(mDatabaseManager::storeObject); // Single doesn't have doOnNext back-ported
+        return articleObservable.map(ArticlesDataMapper::convertArticleToDomain);
     }
 
     public static class RequestArticlesCommandBuilder

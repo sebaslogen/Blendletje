@@ -1,5 +1,6 @@
 package com.sebaslogen.blendletje.data.database;
 
+import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 
 import io.realm.Realm;
@@ -36,6 +37,12 @@ public class DatabaseManager {
         // Try with resources makes sure DB is closed after using it
         try (Realm realm = mDatabaseGetter.call()) {
             realm.executeTransaction(db -> db.copyToRealm(popularArticlesResource));
+        }
+    }
+
+    public void storeObject(final ArticleResource articleResource) {
+        try (Realm realm = mDatabaseGetter.call()) {
+            realm.executeTransaction(db -> db.copyToRealm(articleResource));
         }
     }
 }

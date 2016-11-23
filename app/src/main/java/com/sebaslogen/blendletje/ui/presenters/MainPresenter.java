@@ -37,7 +37,7 @@ public class MainPresenter implements MainContract.UserActions {
 
     @Override
     public void deAttachView() {
-        mSubscriptions.clear();
+        mSubscriptions.clear(); // Unsubscribe from any ongoing subscription
     }
 
     private void loadPopularArticles() {
