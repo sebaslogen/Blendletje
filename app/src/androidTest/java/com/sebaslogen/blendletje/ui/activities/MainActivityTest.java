@@ -31,8 +31,6 @@ import java.util.List;
 
 import io.realm.RealmConfiguration;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import okhttp3.HttpUrl;
-import okhttp3.mockwebserver.MockWebServer;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.schedulers.Schedulers;
 import utils.MockDataProvider;
@@ -42,7 +40,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
@@ -50,9 +47,6 @@ public class MainActivityTest {
     private final BlendletjeApp mApp = (BlendletjeApp) InstrumentationRegistry.getInstrumentation()
             .getTargetContext()
             .getApplicationContext();
-    private final MockWebServer mServer = new MockWebServer();
-    private final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
-            "popular(ws.blendle.com_items_popular).json");
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class,
             false,  // initialTouchMode
@@ -61,7 +55,7 @@ public class MainActivityTest {
     public DaggerMockRule<CommandsComponent> daggerRule =
             new DaggerMockRule<>(CommandsComponent.class,
                     new ApplicationModule(mApp),
-                    new NetworkModule(baseUrl, RxJavaCallAdapterFactory.
+                    new NetworkModule("mocked", RxJavaCallAdapterFactory.
                             createWithScheduler(Schedulers.immediate())),
                     new DatabaseModule(mock(RealmConfiguration.class)),
                     new CommandsModule())
@@ -81,6 +75,7 @@ public class MainActivityTest {
         mSystemAnimations = new SystemAnimations(InstrumentationRegistry.getInstrumentation()
                 .getTargetContext());
         mSystemAnimations.disableAll();
+        // Load local Logo drawable resource for all image load requests
         final Picasso picasso = Picasso.with(mApp);
         doReturn(picasso.load(R.drawable.logo)).when(mImageLoader).load(anyString());
         doAnswer(invocation -> {
