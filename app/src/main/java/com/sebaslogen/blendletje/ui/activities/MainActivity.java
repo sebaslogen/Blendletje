@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private RecyclerView mPopularArticlesRV;
     private Drawable mLoadingAnimationDrawable;
     private ImageView mLoadAnimationView;
+    private ItemsListAdapter mItemsListAdapter;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -88,18 +89,26 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Override
     public void displayPopularArticlesList(@NonNull final List<ListItem> popularArticlesList) {
         // TODO: Use payload to notify changes instead of recreating
-        mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList, mImageLoader,
-                (view, id, title, imageUrl) -> {
-                    openArticle(view, id, title, imageUrl);
-                    return null;
-                }));
+        if (mItemsListAdapter == null) {
+            mItemsListAdapter = new ItemsListAdapter(popularArticlesList, mImageLoader,
+                    (view, id, title, imageUrl) -> {
+                        openArticle(view, id, title, imageUrl);
+                        return null;
+                    });
+            mPopularArticlesRV.setAdapter(mItemsListAdapter);
+        } else {
+//            mItemsListAdapter.notifyDataSetChanged();
+            mItemsListAdapter.updateList(popularArticlesList);
+        }
     }
 
     private void openArticle(final View view, final String id, final String title,
                              @Nullable final String imageUrl) {
         final ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
         final TextView titleView = (TextView) view.findViewById(R.id.tv_title);
-        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, imageUrl);
+        final View navigationBar = findViewById(android.R.id.navigationBarBackground);
+        final View statusBar = findViewById(android.R.id.statusBarBackground);
+        ArticleActivity.openArticleActivity(this, navigationBar, statusBar, imageView, titleView, id, title, imageUrl);
 //        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, "https://static.blendle.nl/publication/newyorktimes/2016/11/22/item/36_1/version/1/image/large/3a7bcb130f14ad332178c95ee32440395bdd999d.jpg");
     }
 }
