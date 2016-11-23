@@ -18,7 +18,7 @@ import com.sebaslogen.blendletje.domain.model.Article;
 import com.sebaslogen.blendletje.domain.model.ArticleImage;
 import com.sebaslogen.blendletje.domain.model.ImageMetadata;
 import com.sebaslogen.blendletje.domain.model.ListItem;
-import com.squareup.picasso.Picasso;
+import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 
 import java.util.List;
 
@@ -31,6 +31,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final short VIEW_TYPE_ARTICLE = 0;
     private static final short VIEW_TYPE_ADVERTISEMENT = 1;
     private final List<ListItem> mItemsList;
+    private final ImageLoader mImageLoader;
     private int mLastPosition = -1; // Remember the last item shown on screen for animations
     private final DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
 
@@ -39,8 +40,9 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      *
      * @param itemsList List of items
      */
-    public ItemsListAdapter(final List<ListItem> itemsList) {
+    public ItemsListAdapter(final List<ListItem> itemsList, final ImageLoader imageLoader) {
         mItemsList = itemsList;
+        mImageLoader = imageLoader;
     }
 
     @Override
@@ -149,17 +151,15 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mImage.setContentDescription(caption);
             mImage.setLayoutParams(new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     height));
-            final Context context = mImage.getContext();
-            Picasso.with(context).cancelRequest(mImage);
-            Picasso.with(context)
-                    .load(url)
+            mImageLoader.cancelRequest(mImage);
+            mImageLoader.load(url)
                     .placeholder(R.drawable.empty)
                     .error(R.drawable.empty)
                     .into(mImage);
         }
 
         void clearImage() {
-            Picasso.with(mImage.getContext()).cancelRequest(mImage);
+            mImageLoader.cancelRequest(mImage);
             mImage.setLayoutParams(mDefaultLayoutParams);
             mImage.setContentDescription(mDefaultImageContentDescription);
             mImage.setImageDrawable(null);

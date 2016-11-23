@@ -18,6 +18,7 @@ import com.sebaslogen.blendletje.dependency.injection.modules.MainActivityModule
 import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.activities.recyclerview.ItemsListAdapter;
 import com.sebaslogen.blendletje.ui.presenters.MainContract;
+import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Inject
     MainContract.UserActions mUserActions;
+    @Inject
+    ImageLoader mImageLoader;
     private RecyclerView mPopularArticlesRV;
     private Drawable mLoadingAnimationDrawable;
     private ImageView mLoadAnimationView;
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         setSupportActionBar(toolbar);
         mPopularArticlesRV = (RecyclerView) findViewById(R.id.rv_popular_articles_list);
         mPopularArticlesRV.setLayoutManager(new LinearLayoutManager(this));
-        mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>())); // This avoids layout errors
+        mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>(), mImageLoader)); // This avoids layout errors
         mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
 
@@ -82,6 +85,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void displayPopularArticlesList(@NonNull final List<ListItem> popularArticlesList) {
-        mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList));
+        mPopularArticlesRV.setAdapter(new ItemsListAdapter(popularArticlesList, mImageLoader));
     }
 }

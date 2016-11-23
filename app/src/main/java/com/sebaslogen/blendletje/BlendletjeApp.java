@@ -6,6 +6,7 @@ import android.support.annotation.VisibleForTesting;
 import com.sebaslogen.blendletje.data.remote.apis.BlendleAPI;
 import com.sebaslogen.blendletje.dependency.injection.components.CommandsComponent;
 import com.sebaslogen.blendletje.dependency.injection.components.DaggerCommandsComponent;
+import com.sebaslogen.blendletje.dependency.injection.modules.ApplicationModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.CommandsModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.DatabaseModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
@@ -38,6 +39,7 @@ public class BlendletjeApp extends Application {
                 .deleteRealmIfMigrationNeeded()
                 .build();
         mCommandsComponent = DaggerCommandsComponent.builder()
+                .applicationModule(new ApplicationModule(this))
                 .networkModule(new NetworkModule(BlendleAPI.END_POINT,
                         RxJavaCallAdapterFactory.create()))
                 .databaseModule(new DatabaseModule(realmConfiguration))

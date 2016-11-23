@@ -3,16 +3,21 @@ package com.sebaslogen.blendletje.ui.activities;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
+import android.widget.ImageView;
 
 import com.sebaslogen.blendletje.BlendletjeApp;
+import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.dependency.injection.components.CommandsComponent;
+import com.sebaslogen.blendletje.dependency.injection.modules.ApplicationModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.CommandsModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.DatabaseModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
 import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.pages.MainPage;
 import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
+import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 import com.sebaslogen.blendletje.ui.utils.SystemAnimations;
+import com.squareup.picasso.Picasso;
 
 import org.junit.After;
 import org.junit.Before;
@@ -32,17 +37,22 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.schedulers.Schedulers;
 import utils.MockDataProvider;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
 
+    private final BlendletjeApp mApp = (BlendletjeApp) InstrumentationRegistry.getInstrumentation()
+            .getTargetContext()
+            .getApplicationContext();
     private final MockWebServer mServer = new MockWebServer();
     private final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
             "popular(ws.blendle.com_items_popular).json");
-    private SystemAnimations mSystemAnimations;
-
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class,
             false,  // initialTouchMode
@@ -50,36 +60,38 @@ public class MainActivityTest {
     @Rule
     public DaggerMockRule<CommandsComponent> daggerRule =
             new DaggerMockRule<>(CommandsComponent.class,
+                    new ApplicationModule(mApp),
                     new NetworkModule(baseUrl, RxJavaCallAdapterFactory.
                             createWithScheduler(Schedulers.immediate())),
                     new DatabaseModule(mock(RealmConfiguration.class)),
                     new CommandsModule())
-                    .set(
-                            component -> {
-                                final BlendletjeApp app =
-                                        (BlendletjeApp) InstrumentationRegistry.getInstrumentation()
-                                                .getTargetContext()
-                                                .getApplicationContext();
-                                app.setComponent(component);
-                            });
-
-    // Injected automatically by DaggerMockRule instead of @Provides methods
+                    .set(mApp::setComponent);
+    // @Mock annotated fields are injected automatically by DaggerMockRule instead of @Provides methods
+    @Mock
+    ImageLoader mImageLoader;
     @Mock
     MainPresenter mMainPresenter;
+    private SystemAnimations mSystemAnimations;
+
+    public MainActivityTest() throws IOException {
+    }
 
     @Before
     public void setUp() throws Exception {
         mSystemAnimations = new SystemAnimations(InstrumentationRegistry.getInstrumentation()
                 .getTargetContext());
         mSystemAnimations.disableAll();
+        final Picasso picasso = Picasso.with(mApp);
+        doReturn(picasso.load(R.drawable.logo)).when(mImageLoader).load(anyString());
+        doAnswer(invocation -> {
+            picasso.cancelRequest((ImageView) invocation.getArguments()[0]);
+            return null;
+        }).when(mImageLoader).cancelRequest(any(ImageView.class));
     }
 
     @After
     public void tearDown() throws Exception {
         mSystemAnimations.enableAll();
-    }
-
-    public MainActivityTest() throws IOException {
     }
 
     @Test
@@ -99,10 +111,8 @@ public class MainActivityTest {
         final MainActivity mainActivity = activityTestRule.launchActivity(null);
         final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
         // When
-        mainActivity.runOnUiThread(() -> {
-            mainActivity.displayPopularArticlesList(
-                    popularArticlesList);
-        });
+        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(
+                popularArticlesList));
         // Then
         final MainPage mainPage = new MainPage();
         mainPage.checkArticleItemsAreShown(popularArticlesList);

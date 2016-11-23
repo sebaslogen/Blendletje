@@ -2,6 +2,8 @@ package com.sebaslogen.blendletje.dependency.injection.modules;
 
 import android.content.Context;
 
+import com.sebaslogen.blendletje.ui.utils.ImageLoader;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -20,6 +22,12 @@ public class ApplicationModule {
     @Provides
     public Context provideApplicationContext() {
         return mAppContext;
+    }
+
+    @Singleton
+    @Provides
+    public ImageLoader provideImageLoader() {
+        return new ImageLoader(mAppContext);
     }
 
 }
