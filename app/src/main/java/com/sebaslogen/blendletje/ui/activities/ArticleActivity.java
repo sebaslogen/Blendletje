@@ -27,6 +27,7 @@ public class ArticleActivity extends AppCompatActivity {
     public static final String ARTICLE_ID = "ARTICLE_ID";
     public static final String EXTRA_ARTICLE_TITLE = "EXTRA_ARTICLE_TITLE";
     public static final String EXTRA_ARTICLE_IMAGE = "EXTRA_ARTICLE_IMAGE";
+    private static final String TOOLBAR_TRANSITION_NAME = "TOOLBAR_TRANSITION_NAME";
 
     //    @Inject
 //    MainContract.UserActions mUserActions;
@@ -37,27 +38,29 @@ public class ArticleActivity extends AppCompatActivity {
     /**
      * Method to navigate and animate transition to this screen
      *
-     * @param activity  Caller activity from which to transition into this one
-     * @param imageView Shared image view between the two screens
-     * @param id        Id of the article to show in this screen
-     * @param title     Title of the article to show in this screen
-     * @param imageUrl  Url of the main image to show in this screen
+     * @param activity    Caller activity from which to transition into this one
+     * @param imageView   Shared image view between the two screens
+     * @param toolbarView Shared toolbar view between the two screens
+     * @param id          Id of the article to show in this screen
+     * @param title       Title of the article to show in this screen
+     * @param imageUrl    Url of the main image to show in this screen
      */
     public static void openArticleActivity(final AppCompatActivity activity, final ImageView imageView,
-                                           final TextView titleView, final String id,
+                                           final Toolbar toolbarView, final String id,
                                            final String title, @Nullable final String imageUrl) {
         final Intent intent = new Intent(activity, ArticleActivity.class);
-        intent.putExtra(ArticleActivity.ARTICLE_ID, id);
-        intent.putExtra(ArticleActivity.EXTRA_ARTICLE_TITLE, title);
-        intent.putExtra(ArticleActivity.EXTRA_ARTICLE_IMAGE, imageUrl);
+        intent.putExtra(ARTICLE_ID, id);
+        intent.putExtra(EXTRA_ARTICLE_TITLE, title);
+        intent.putExtra(EXTRA_ARTICLE_IMAGE, imageUrl);
         final View decor = activity.getWindow().getDecorView();
         final View navigationBar = decor.findViewById(android.R.id.navigationBarBackground);
         final View statusBar = decor.findViewById(android.R.id.statusBarBackground);
-        final Pair<View, String> imagePair = Pair.create(imageView, ArticleActivity.EXTRA_ARTICLE_IMAGE + id);
+        final Pair<View, String> imagePair = Pair.create(imageView, EXTRA_ARTICLE_IMAGE + id);
+        final Pair<View, String> toolbarPair = Pair.create(toolbarView, TOOLBAR_TRANSITION_NAME + id);
         final Pair<View, String> navPair = Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
         final Pair<View, String> statusPair = Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME);
         @SuppressWarnings("unchecked") final ActivityOptionsCompat options = ActivityOptionsCompat
-                .makeSceneTransitionAnimation(activity, navPair, statusPair, imagePair);
+                .makeSceneTransitionAnimation(activity, toolbarPair, navPair, statusPair, imagePair);
         ActivityCompat.startActivity(activity, intent, options.toBundle());
     }
 
@@ -75,6 +78,7 @@ public class ArticleActivity extends AppCompatActivity {
         }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_toolbar_article);
+        ViewCompat.setTransitionName(toolbar, TOOLBAR_TRANSITION_NAME + id);
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

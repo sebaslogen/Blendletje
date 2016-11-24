@@ -28,6 +28,7 @@
                 android:id="@+id/iv_article"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:contentDescription="@string/article_image_description"
                 android:fitsSystemWindows="true"
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"/>
@@ -80,7 +81,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/spacing_large"
-                        android:text="Sample text content"
+                        android:text="Sample text content that has to be removed and replaced by other content..."
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
 
                 </LinearLayout>

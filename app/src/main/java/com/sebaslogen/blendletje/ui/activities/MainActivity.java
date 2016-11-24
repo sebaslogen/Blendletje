@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     @Inject
     ImageLoader mImageLoader;
     private RecyclerView mPopularArticlesRV;
+    private Toolbar mToolbar;
     private Drawable mLoadingAnimationDrawable;
     private ImageView mLoadAnimationView;
     private ItemsListAdapter mItemsListAdapter;
@@ -41,9 +41,9 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_toolbar);
-        toolbar.setTitle(R.string.popular_articles_title);
-        setSupportActionBar(toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.tb_toolbar);
+        mToolbar.setTitle(R.string.popular_articles_title);
+        setSupportActionBar(mToolbar);
         mPopularArticlesRV = (RecyclerView) findViewById(R.id.rv_popular_articles_list);
         mPopularArticlesRV.setLayoutManager(new LinearLayoutManager(this));
         mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>(), mImageLoader,
@@ -105,7 +105,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private void openArticle(final View view, final String id, final String title,
                              @Nullable final String imageUrl) {
         final ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
-        final TextView titleView = (TextView) view.findViewById(R.id.tv_title);
-        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, imageUrl);
+        ArticleActivity.openArticleActivity(this, imageView, mToolbar, id, title, imageUrl);
     }
 }
