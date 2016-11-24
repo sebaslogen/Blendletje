@@ -15,7 +15,6 @@ import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Transition;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -88,33 +87,33 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         mCollapsingToolbarLayout.setTitle(articleTitle);
         final TextView title = (TextView) findViewById(R.id.tv_title);
         title.setText(articleTitle);
-
         mImageView = (ImageView) findViewById(R.id.iv_article);
-        final int primary = ContextCompat.getColor(this, R.color.colorPrimary);
-        final int primaryDark = ContextCompat.getColor(this, R.color.colorPrimaryDark);
-        if (imageUrl != null) {
-            mImageLoader.load(imageUrl)
-                .placeholder(R.drawable.empty)
-                .error(R.drawable.empty)
-                .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
-                    .use(PicassoPalette.Profile.MUTED)
-                    .intoCallBack(palette -> mCollapsingToolbarLayout.setContentScrimColor(
-                        palette.getMutedColor(primary)))
-                    .use(PicassoPalette.Profile.MUTED_DARK)
-                    .intoCallBack(palette -> {
-                        mCollapsingToolbarLayout.setStatusBarScrimColor(
-                            palette.getDarkMutedColor(primaryDark));
-                        supportStartPostponedEnterTransition();
-                    }));
-        } else {
-            mImageView.setLayoutParams(
-                new CollapsingToolbarLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
-        }
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
             .plus(new ArticleActivityModule(this))
             .inject(this);
+
+        if (imageUrl != null) {
+            loadMainImage(imageUrl);
+        }
+    }
+
+    private void loadMainImage(String imageUrl) {
+        final int primary = ContextCompat.getColor(this, R.color.colorPrimary);
+        final int primaryDark = ContextCompat.getColor(this, R.color.colorPrimaryDark);
+        mImageLoader.load(imageUrl)
+            .placeholder(R.drawable.empty)
+            .error(R.drawable.empty)
+            .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
+                .use(PicassoPalette.Profile.MUTED)
+                .intoCallBack(palette -> mCollapsingToolbarLayout.setContentScrimColor(
+                    palette.getMutedColor(primary)))
+                .use(PicassoPalette.Profile.MUTED_DARK)
+                .intoCallBack(palette -> {
+                    mCollapsingToolbarLayout.setStatusBarScrimColor(
+                        palette.getDarkMutedColor(primaryDark));
+                    supportStartPostponedEnterTransition();
+                }));
     }
 
     @Override protected void onResume() {
