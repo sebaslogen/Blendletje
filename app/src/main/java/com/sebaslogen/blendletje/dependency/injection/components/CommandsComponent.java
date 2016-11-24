@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje.dependency.injection.components;
 
 import com.sebaslogen.blendletje.dependency.injection.modules.ApplicationModule;
+import com.sebaslogen.blendletje.dependency.injection.modules.ArticleActivityModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.CommandsModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.DatabaseModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.MainActivityModule;
@@ -19,4 +20,6 @@ import dagger.Component;
 public interface CommandsComponent {
 
     MainActivityComponent plus(MainActivityModule module);
+
+    ArticleActivityComponent plus(ArticleActivityModule module);
 }

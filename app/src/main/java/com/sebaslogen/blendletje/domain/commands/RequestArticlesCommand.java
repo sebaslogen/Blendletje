@@ -52,15 +52,22 @@ public class RequestArticlesCommand {
         final Observable<PopularArticlesResource>
                 localDBPopularArticlesObservable = getPopularArticlesFromLocalDB(amount, page);
         final Observable<PopularArticlesResource> popularArticlesObservable =
-                remotePopularArticlesObservable.publish(remotePopularArticles ->
-                        Observable.merge(remotePopularArticles, // Merge network and local
-                                localDBPopularArticlesObservable // but stop local as soon as network emits
-                                        .takeUntil(remotePopularArticles)))
-                        .onErrorResumeNext(throwable -> (throwable instanceof UnknownHostException) ?
-                                localDBPopularArticlesObservable : Observable.error(throwable)); // Ignore network problems
+            getPopularArticlesFromCombinedSources(remotePopularArticlesObservable,
+                localDBPopularArticlesObservable);
         return popularArticlesObservable
                 .distinct() // Avoid emitting twice when the network is down
                 .map(ArticlesDataMapper::convertPopularArticlesListToDomain); // Map data to domain
+    }
+
+    @NonNull private Observable<PopularArticlesResource> getPopularArticlesFromCombinedSources(
+        Observable<PopularArticlesResource> remotePopularArticlesObservable,
+        Observable<PopularArticlesResource> localDBPopularArticlesObservable) {
+        return remotePopularArticlesObservable.publish(remotePopularArticles ->
+                Observable.merge(remotePopularArticles, // Merge network and local
+                        localDBPopularArticlesObservable // but stop local as soon as network emits
+                                .takeUntil(remotePopularArticles)))
+                .onErrorResumeNext(throwable -> (throwable instanceof UnknownHostException) ?
+                        localDBPopularArticlesObservable : Observable.error(throwable));
     }
 
     private Observable<PopularArticlesResource> getPopularArticlesFromLocalDB(final Integer amount,

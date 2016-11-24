@@ -11,7 +11,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
-
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.dependency.injection.modules.MainActivityModule;
@@ -19,10 +18,8 @@ import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.activities.recyclerview.ItemsListAdapter;
 import com.sebaslogen.blendletje.ui.presenters.MainContract;
 import com.sebaslogen.blendletje.ui.utils.ImageLoader;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements MainContract.ViewActions {
@@ -52,8 +49,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
-                .plus(new MainActivityModule(this))
-                .inject(this);
+            .plus(new MainActivityModule(this))
+            .inject(this);
     }
 
     @Override
