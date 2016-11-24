@@ -21,6 +21,7 @@ public class MainPresenter implements MainContract.UserActions {
     private final Scheduler mUIScheduler;
     private final CompositeSubscription mSubscriptions;
     private final RequestArticlesCommand.RequestArticlesCommandBuilder mRequestArticlesCommandBuilder;
+    private boolean mIsDataLoaded = false;
 
     public MainPresenter(final MainContract.ViewActions viewActions,
                          @Named("io") final Scheduler ioScheduler,
@@ -35,8 +36,10 @@ public class MainPresenter implements MainContract.UserActions {
 
     @Override
     public void attachView() {
-        mViewActions.showLoadingAnimation();
-        loadPopularArticles();
+        if (!mIsDataLoaded) {
+            mViewActions.showLoadingAnimation();
+            loadPopularArticles();
+        }
     }
 
     @Override
@@ -72,6 +75,7 @@ public class MainPresenter implements MainContract.UserActions {
 
     private void showArticles(final List<ListItem> items) {
         Timber.d("List of articles loaded and thrown to UI");
+        mIsDataLoaded = true;
         mViewActions.hideLoadingAnimation();
         mViewActions.displayPopularArticlesList(items);
     }

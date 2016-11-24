@@ -97,8 +97,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                     });
             mPopularArticlesRV.setAdapter(mItemsListAdapter);
         } else {
-//            mItemsListAdapter.notifyDataSetChanged();
-            mItemsListAdapter.updateList(popularArticlesList);
+//            mItemsListAdapter.updateList(popularArticlesList); // TODO: Fix diffUtil bug
+            mItemsListAdapter.overwriteList(popularArticlesList);
         }
     }
 
@@ -106,9 +106,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                              @Nullable final String imageUrl) {
         final ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
         final TextView titleView = (TextView) view.findViewById(R.id.tv_title);
-        final View navigationBar = findViewById(android.R.id.navigationBarBackground);
-        final View statusBar = findViewById(android.R.id.statusBarBackground);
-        ArticleActivity.openArticleActivity(this, navigationBar, statusBar, imageView, titleView, id, title, imageUrl);
-//        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, "https://static.blendle.nl/publication/newyorktimes/2016/11/22/item/36_1/version/1/image/large/3a7bcb130f14ad332178c95ee32440395bdd999d.jpg");
+        ArticleActivity.openArticleActivity(this, imageView, titleView, id, title, imageUrl);
     }
 }

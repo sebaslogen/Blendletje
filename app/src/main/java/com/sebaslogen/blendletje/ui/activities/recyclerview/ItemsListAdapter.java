@@ -33,7 +33,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private static final short VIEW_TYPE_ARTICLE = 0;
     private static final short VIEW_TYPE_ADVERTISEMENT = 1;
-    private final List<ListItem> mItemsList;
+    private List<ListItem> mItemsList;
     private final ImageLoader mImageLoader;
     private final Func4<View, String, String, String, Void> mItemClick;
     private final DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
@@ -126,6 +126,11 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @Override
     public int getItemViewType(final int position) {
         return (mItemsList.get(position) instanceof Article) ? VIEW_TYPE_ARTICLE : VIEW_TYPE_ADVERTISEMENT;
+    }
+
+    public void overwriteList(final List<ListItem> newList) {
+        mItemsList = newList;
+        notifyDataSetChanged();
     }
 
     public void updateList(final List<ListItem> newList) {
