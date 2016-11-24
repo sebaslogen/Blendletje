@@ -45,7 +45,12 @@ public class DatabaseManager implements ArticlesDataSource {
     public void storeObject(final PopularArticlesResource popularArticlesResource) {
         // Try with resources makes sure DB is closed after using it
         try (Realm realm = mDatabaseGetter.call()) {
-            realm.executeTransaction(db -> db.copyToRealm(popularArticlesResource));
+            realm.executeTransaction(db -> {
+                realm.delete(PopularArticlesResource.class);
+                db.copyToRealm(popularArticlesResource);
+            });
+        } catch (Exception e) {
+            final int d = e.hashCode(); // TODO handle exception
         }
     }
 
