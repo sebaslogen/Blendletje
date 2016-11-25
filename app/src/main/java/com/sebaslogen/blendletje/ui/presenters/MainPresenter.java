@@ -69,7 +69,6 @@ public class MainPresenter implements MainContract.UserActions {
             Thread.sleep(700 + (new Random()).nextInt(1000));
         } catch (final InterruptedException ignored) {
         }
-        // TODO: Fill items list with advertisements
         final Random randomGenerator = new Random();
         for (final Article article : articles) {
             if (randomGenerator.nextInt(10) % 3 == 0) {

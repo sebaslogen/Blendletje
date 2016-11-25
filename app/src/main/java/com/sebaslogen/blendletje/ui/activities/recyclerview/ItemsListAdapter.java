@@ -62,7 +62,6 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 return new ArticleItemViewHolder(view);
             case VIEW_TYPE_ADVERTISEMENT:
             default:
-                // TODO: Implement advertisement items
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.advertisement_item, parent, false);
                 return new AdvertisementItemViewHolder(view);
         }
