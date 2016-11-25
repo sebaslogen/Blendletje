@@ -2,7 +2,9 @@ package com.sebaslogen.blendletje.ui.presenters;
 
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.domain.model.Article;
+
 import javax.inject.Named;
+
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;

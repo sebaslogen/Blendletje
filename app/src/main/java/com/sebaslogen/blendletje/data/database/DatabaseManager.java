@@ -2,13 +2,16 @@ package com.sebaslogen.blendletje.data.database;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
+
+import java.io.IOException;
+
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
-import java.io.IOException;
 import rx.Observable;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Func0;
@@ -29,8 +32,8 @@ public class DatabaseManager implements ArticlesDataSource {
 
     public DatabaseManager() {
         mDatabaseConfig = new RealmConfiguration.Builder()
-                .deleteRealmIfMigrationNeeded()
-                .build();
+            .deleteRealmIfMigrationNeeded()
+            .build();
         mDatabaseGetter = () -> Realm.getInstance(mDatabaseConfig);
     }
 
@@ -72,7 +75,7 @@ public class DatabaseManager implements ArticlesDataSource {
      */
     public void storeObject(final ArticleResource articleResource) {
         try (Realm realm = mDatabaseGetter.call()) {
-            RealmResults<ArticleResource> articleResources =
+            final RealmResults<ArticleResource> articleResources =
                 realm.where(ArticleResource.class).equalTo("id", articleResource.id()).findAll();
             articleResources.deleteAllFromRealm(); // Delete any previous instance of the object in DB
             optimizeCache(realm);
@@ -89,7 +92,7 @@ public class DatabaseManager implements ArticlesDataSource {
     private void optimizeCache(final Realm realm) {
         final RealmResults<ArticleResource> articleResources = realm.where(ArticleResource.class).findAll();
         if (articleResources.size() >= MAX_ARTICLES_IN_CACHE) {
-            for (int i = 0; i < articleResources.size() / 2 ; i++) {
+            for (int i = 0; i < articleResources.size() / 2; i++) {
                 articleResources.deleteFirstFromRealm();
             }
         }
@@ -106,7 +109,7 @@ public class DatabaseManager implements ArticlesDataSource {
         return Observable.fromCallable((Func0<PopularArticlesResource>) () -> {
             try (Realm realm = mDatabaseGetter.call()) {
                 RealmResults<PopularArticlesResource> popularArticlesResources =
-                        realm.where(PopularArticlesResource.class).findAll();
+                    realm.where(PopularArticlesResource.class).findAll();
                 if (popularArticlesResources.isEmpty()) {
                     return null; // When no results return null and filter it out at the end of this method
                 }
@@ -120,7 +123,7 @@ public class DatabaseManager implements ArticlesDataSource {
         return Observable.fromCallable((Func0<ArticleResource>) () -> {
             try (Realm realm = mDatabaseGetter.call()) {
                 RealmResults<ArticleResource> articleResources = // Search and find object in DB
-                        realm.where(ArticleResource.class).equalTo("id", id).findAll();
+                    realm.where(ArticleResource.class).equalTo("id", id).findAll();
                 if (articleResources.isEmpty()) {
                     return null;
                 }

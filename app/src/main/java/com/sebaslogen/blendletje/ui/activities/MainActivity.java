@@ -11,6 +11,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
+
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.dependency.injection.modules.MainActivityModule;
@@ -18,8 +20,10 @@ import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.activities.recyclerview.ItemsListAdapter;
 import com.sebaslogen.blendletje.ui.presenters.MainContract;
 import com.sebaslogen.blendletje.ui.utils.ImageLoader;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements MainContract.ViewActions {
@@ -44,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mPopularArticlesRV = (RecyclerView) findViewById(R.id.rv_popular_articles_list);
         mPopularArticlesRV.setLayoutManager(new LinearLayoutManager(this));
         mPopularArticlesRV.setAdapter(new ItemsListAdapter(new ArrayList<>(), mImageLoader,
-                (v, i, t, iU) -> null)); // This avoids layout errors
+            (v, i, t, iU) -> null)); // This avoids layout errors
         mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
 
@@ -88,10 +92,10 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         // TODO: Use payload to notify changes instead of recreating
         if (mItemsListAdapter == null) {
             mItemsListAdapter = new ItemsListAdapter(popularArticlesList, mImageLoader,
-                    (view, id, title, imageUrl) -> {
-                        openArticle(view, id, title, imageUrl);
-                        return null;
-                    });
+                (view, id, title, imageUrl) -> {
+                    openArticle(view, id, title, imageUrl);
+                    return null;
+                });
             mPopularArticlesRV.setAdapter(mItemsListAdapter);
         } else {
             mItemsListAdapter.overwriteList(popularArticlesList);
@@ -100,7 +104,8 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     private void openArticle(final View view, final String id, final String title,
                              @Nullable final String imageUrl) {
-        final ImageView imageView = (ImageView) view.findViewById(R.id.iv_image);
-        ArticleActivity.openArticleActivity(this, imageView, mToolbar, id, title, imageUrl);
+        final ImageView imageView = imageUrl == null ? null : (ImageView) view.findViewById(R.id.iv_image);
+        final TextView textView = (TextView) view.findViewById(R.id.tv_title);
+        ArticleActivity.openArticleActivity(this, imageView, textView, mToolbar, id, title, imageUrl);
     }
 }

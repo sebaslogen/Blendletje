@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
+            android:background="?attr/colorPrimary"
             app:contentScrim="?attr/colorPrimary"
             app:expandedTitleMarginEnd="64dp"
             app:expandedTitleMarginStart="48dp"
@@ -95,6 +96,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/spacing_large"
                         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:visibility="gone"
                         tools:text="Sample text content that has to be removed and replaced by other content..."/>
 
                 </LinearLayout>

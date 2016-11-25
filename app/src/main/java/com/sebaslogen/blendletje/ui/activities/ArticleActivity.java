@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
@@ -29,8 +30,10 @@ import com.sebaslogen.blendletje.domain.model.ArticleContent;
 import com.sebaslogen.blendletje.ui.presenters.ArticleContract;
 import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 import com.sebaslogen.blendletje.ui.utils.TextUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
 public class ArticleActivity extends AppCompatActivity implements ArticleContract.ViewActions {
@@ -60,38 +63,45 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
      * @param imageUrl    Url of the main image to show in this screen
      */
     public static void openArticleActivity(final AppCompatActivity activity,
-                                           final ImageView imageView, final Toolbar toolbarView, final String id, final String title,
+                                           @Nullable final ImageView imageView,
+                                           final TextView textView,
+                                           final Toolbar toolbarView,
+                                           final String id, final String title,
                                            @Nullable final String imageUrl) {
         final Intent intent = new Intent(activity, ArticleActivity.class);
         intent.putExtra(ARTICLE_ID, id);
         intent.putExtra(EXTRA_ARTICLE_TITLE, title);
         intent.putExtra(EXTRA_ARTICLE_IMAGE, imageUrl);
         @SuppressWarnings("unchecked") final ActivityOptionsCompat options =
-                getActivityTransitionOptions(activity, imageView, toolbarView, id);
+            getActivityTransitionOptions(activity, imageView, textView, toolbarView, id);
         ActivityCompat.startActivity(activity, intent, options.toBundle());
+//        ActivityCompat.startActivity(activity, intent, null);
     }
 
     @NonNull
     private static ActivityOptionsCompat getActivityTransitionOptions(final AppCompatActivity activity,
-                                                                      final ImageView imageView, final Toolbar toolbarView, final String id) {
+                                                                      @Nullable final ImageView imageView,
+                                                                      final TextView textView,
+                                                                      final Toolbar toolbarView,
+                                                                      final String articleId) {
         final List<Pair<View, String>> pairs = new ArrayList<>();
         final View decor = activity.getWindow().getDecorView();
         final View navigationBar = decor.findViewById(android.R.id.navigationBarBackground);
         final View statusBar = decor.findViewById(android.R.id.statusBarBackground);
-        pairs.add(Pair.create(imageView, EXTRA_ARTICLE_IMAGE + id));
-        pairs.add(Pair.create(toolbarView, TOOLBAR_TRANSITION_NAME + id));
+        pairs.add(Pair.create(textView, EXTRA_ARTICLE_TITLE + articleId));
+        pairs.add(Pair.create(imageView, EXTRA_ARTICLE_IMAGE + articleId));
+        pairs.add(Pair.create(toolbarView, TOOLBAR_TRANSITION_NAME + articleId));
         pairs.add(Pair.create(navigationBar, Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME));
         pairs.add(Pair.create(statusBar, Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME));
         final List<Pair<View, String>> validPairs = new ArrayList<>();
         for (final Pair<View, String> pair : pairs) {
-            if (pair.first
-                    != null) { // On some Android phones the navigation or status views are null
+            if (pair.first != null) { // On some Android phones the navigation or status views are null
                 validPairs.add(pair);
             }
         }
         //noinspection unchecked
         return ActivityOptionsCompat.makeSceneTransitionAnimation(activity,
-                validPairs.toArray(new Pair[validPairs.size()]));
+            validPairs.toArray(new Pair[validPairs.size()]));
     }
 
     @Override
@@ -103,9 +113,12 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
 
         final String articleId = getIntent().getStringExtra(ARTICLE_ID);
         final String imageUrl = getIntent().getStringExtra(EXTRA_ARTICLE_IMAGE);
+        final TextView title = (TextView) findViewById(R.id.tv_title);
+        mImageView = (ImageView) findViewById(R.id.iv_article);
         if (imageUrl != null) {
-            ViewCompat.setTransitionName(findViewById(R.id.iv_article), EXTRA_ARTICLE_IMAGE + articleId);
+            ViewCompat.setTransitionName(mImageView, EXTRA_ARTICLE_IMAGE + articleId);
         }
+        ViewCompat.setTransitionName(title, EXTRA_ARTICLE_TITLE + articleId);
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_toolbar_article);
         ViewCompat.setTransitionName(toolbar, TOOLBAR_TRANSITION_NAME + articleId);
@@ -116,22 +129,22 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
 
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.ctbl_toolbar);
         mCollapsingToolbarLayout.setExpandedTitleColor(
-                ContextCompat.getColor(this, android.R.color.transparent));
+            ContextCompat.getColor(this, android.R.color.transparent));
         final String articleTitle = getIntent().getStringExtra(EXTRA_ARTICLE_TITLE);
         mCollapsingToolbarLayout.setTitle(articleTitle);
-        final TextView title = (TextView) findViewById(R.id.tv_title);
         title.setText(TextUtils.getSpannedString(articleTitle));
-        mImageView = (ImageView) findViewById(R.id.iv_article);
         mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
         mTextContentView = (TextView) findViewById(R.id.tv_content);
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
-                .plus(new ArticleActivityModule(this, articleId))
-                .inject(this);
+            .plus(new ArticleActivityModule(this, articleId))
+            .inject(this);
 
         if (imageUrl != null) {
             loadMainImage(imageUrl);
+        } else {
+            supportStartPostponedEnterTransition();
         }
     }
 
@@ -139,18 +152,18 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         final int primary = ContextCompat.getColor(this, R.color.colorPrimary);
         final int primaryDark = ContextCompat.getColor(this, R.color.colorPrimaryDark);
         mImageLoader.load(imageUrl)
-                .placeholder(R.drawable.empty)
-                .error(R.drawable.empty)
-                .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
-                        .use(PicassoPalette.Profile.MUTED)
-                        .intoCallBack(palette -> mCollapsingToolbarLayout.setContentScrimColor(
-                                palette.getMutedColor(primary)))
-                        .use(PicassoPalette.Profile.MUTED_DARK)
-                        .intoCallBack(palette -> {
-                            mCollapsingToolbarLayout.setStatusBarScrimColor(
-                                    palette.getDarkMutedColor(primaryDark));
-                            supportStartPostponedEnterTransition();
-                        }));
+            .placeholder(R.drawable.empty)
+            .error(R.drawable.empty)
+            .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
+                .use(PicassoPalette.Profile.MUTED)
+                .intoCallBack(palette -> mCollapsingToolbarLayout.setContentScrimColor(
+                    palette.getMutedColor(primary)))
+                .use(PicassoPalette.Profile.MUTED_DARK)
+                .intoCallBack(palette -> {
+                    mCollapsingToolbarLayout.setStatusBarScrimColor(
+                        palette.getDarkMutedColor(primaryDark));
+                    supportStartPostponedEnterTransition();
+                }));
     }
 
     @Override
@@ -184,7 +197,8 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         mLoadAnimationView.setVisibility(View.GONE);
     }
 
-    @Override public void displayArticle(Article article) {
+    @Override
+    public void displayArticle(final Article article) {
         final ArticleContent contents = article.contents();
         if (contents != null) {
             CharSequence sequence = "";
@@ -195,6 +209,7 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
                 sequence = android.text.TextUtils.concat(sequence, "<p>", paragraph);
             }
             mTextContentView.setText(TextUtils.getSpannedString(sequence.toString()));
+            mTextContentView.setVisibility(View.VISIBLE);
         }
     }
 
