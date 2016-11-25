@@ -10,9 +10,11 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -25,6 +27,7 @@ import com.github.florent37.picassopalette.PicassoPalette;
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.dependency.injection.modules.ArticleActivityModule;
+import com.sebaslogen.blendletje.domain.model.Advertisement;
 import com.sebaslogen.blendletje.domain.model.Article;
 import com.sebaslogen.blendletje.domain.model.ArticleContent;
 import com.sebaslogen.blendletje.ui.presenters.ArticleContract;
@@ -33,6 +36,7 @@ import com.sebaslogen.blendletje.ui.utils.TextUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -211,6 +215,29 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
             mTextContentView.setText(TextUtils.getSpannedString(sequence.toString()));
             mTextContentView.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void displayAdvertisement(final Advertisement advertisement) {
+        findViewById(R.id.cv_ad_item_container).setVisibility(View.VISIBLE);
+        final TextView adTitle = (TextView) findViewById(R.id.tv_ad_title);
+        adTitle.setText(advertisement.getTitle());
+        final ImageView adImage = (ImageView) findViewById(R.id.iv_ad_image);
+        final String imageUrl = "http://lorempixel.com/600/500/cats/" + (new Random()).nextInt(10);
+        mImageLoader.load(imageUrl)
+            .placeholder(R.drawable.empty)
+            .error(R.drawable.empty)
+            .into(adImage, PicassoPalette.with(imageUrl, adImage)
+                .use(PicassoPalette.Profile.VIBRANT_LIGHT)
+                .intoTextColor(adTitle, PicassoPalette.Swatch.BODY_TEXT_COLOR)
+                .use(PicassoPalette.Profile.MUTED_DARK)
+                .intoCallBack(palette -> {
+                    final Palette.Swatch swatch = palette.getDarkMutedSwatch();
+                    if (swatch != null) {
+                        adTitle.setBackgroundColor(
+                            ColorUtils.setAlphaComponent(swatch.getRgb(), 200));
+                    }
+                }));
     }
 
     private void setupActivityTransitions() {

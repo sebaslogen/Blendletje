@@ -232,8 +232,8 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         public AdvertisementItemViewHolder(final View view) {
             super(view);
             mContainer = (CardView) view.findViewById(R.id.cv_ad_item_container);
-            mTitle = (TextView) view.findViewById(R.id.tv_title);
-            mImageView = (ImageView) view.findViewById(R.id.iv_image);
+            mTitle = (TextView) view.findViewById(R.id.tv_ad_title);
+            mImageView = (ImageView) view.findViewById(R.id.iv_ad_image);
         }
 
         void setTitle(final String text) {

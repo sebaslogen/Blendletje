@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje.ui.presenters;
 
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
+import com.sebaslogen.blendletje.domain.model.Advertisement;
 import com.sebaslogen.blendletje.domain.model.Article;
 
 import javax.inject.Named;
@@ -48,7 +49,6 @@ public class ArticlePresenter implements ArticleContract.UserActions {
         final Subscription subscription =
             mRequestArticlesCommandBuilder.createRequestArticlesCommand()
                 .getArticle(mArticleId)
-                //.map(this::addAdvertisements) // TODO: Define how to load and show a single Ad
                 .subscribeOn(mIOScheduler)
                 .observeOn(mUIScheduler)
                 .subscribe(this::showArticle, throwable -> {
@@ -63,5 +63,6 @@ public class ArticlePresenter implements ArticleContract.UserActions {
         mIsDataLoaded = true;
         mViewActions.hideLoadingAnimation();
         mViewActions.displayArticle(article);
+        mViewActions.displayAdvertisement(new Advertisement("Bring me home!"));
     }
 }

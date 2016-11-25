@@ -102,6 +102,10 @@
                         android:visibility="gone"
                         tools:text="Sample text content that has to be removed and replaced by other content..."/>
 
+                    <include layout="@layout/advertisement_item"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
+
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
