@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.sebaslogen.blendletje.R;
+import com.sebaslogen.blendletje.domain.model.Advertisement;
 import com.sebaslogen.blendletje.domain.model.Article;
 import com.sebaslogen.blendletje.domain.model.ArticleImage;
 import com.sebaslogen.blendletje.domain.model.ImageMetadata;
@@ -26,7 +27,6 @@ import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 
 import java.util.List;
 
-import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Func4;
 
 import static com.sebaslogen.blendletje.ui.utils.TextUtils.getMarkupStrippedString;
@@ -63,9 +63,8 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             case VIEW_TYPE_ADVERTISEMENT:
             default:
                 // TODO: Implement advertisement items
-//                view = LayoutInflater.from(parent.getContext()).inflate(...
-//                return new AdvertisementItemViewHolder(view);
-                throw new OnErrorNotImplementedException(new Throwable("TODO: Implement advertisement items"));
+                view = LayoutInflater.from(parent.getContext()).inflate(R.layout.advertisement_item, parent, false);
+                return new AdvertisementItemViewHolder(view);
         }
     }
 
@@ -78,10 +77,8 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 bindArticleItem((Article) listItem, (ArticleItemViewHolder) holder);
                 break;
             case VIEW_TYPE_ADVERTISEMENT:
-                // TODO: Implement advertisement items biding
-//                bindAdvertisementItem((Advertisement) listItem, (AdvertisementItemViewHolder) holder);
-                throw new OnErrorNotImplementedException(new Throwable("TODO: Implement advertisement items biding"));
-//                break;
+                bindAdvertisementItem((Advertisement) listItem, position, (AdvertisementItemViewHolder) holder);
+                break;
             default:
                 throw new IllegalArgumentException("View holder contains an unknown item type");
         }
@@ -93,6 +90,12 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         ((ViewHolderAnimations) holder).clearAnimation();
     }
 
+    /**
+     * This method will animate the appearance of new items in the recycler view
+     *
+     * @param view     View item to animate
+     * @param position Position of the item in the list to make sure only new items are animated
+     */
     private void setAnimation(final ViewHolderAnimations view, final int position) {
         if (position > mLastPosition) {
             final Animation animation = AnimationUtils.loadAnimation(view.getContext(), R.anim.card_appears);
@@ -101,6 +104,14 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             view.startAnimation(animation);
             mLastPosition = position;
         }
+    }
+
+    private void bindAdvertisementItem(final Advertisement advertisement, final int position,
+                                       final AdvertisementItemViewHolder holder) {
+        final String title = advertisement.getTitle();
+        holder.setTitle(title);
+        final String imageUrl = "http://lorempixel.com/600/400/sports/" + (position % 10);
+        holder.setImage(imageUrl);
     }
 
     private void bindArticleItem(final Article article, final ArticleItemViewHolder holder) {
@@ -117,7 +128,6 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             holder.setImage(imageUrl, image.height(), articleImage.caption());
         }
         holder.setClickAction(mItemClick, article.id(), title, imageUrl);
-
     }
 
     @Override
@@ -195,6 +205,57 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mImageView.setContentDescription(mDefaultImageContentDescription);
             mImageView.setImageDrawable(null);
             mTitle.setBackgroundResource(R.color.article_title_background);
+        }
+
+        @Override
+        public Context getContext() {
+            return mContainer.getContext();
+        }
+
+        @Override
+        public void startAnimation(final Animation animation) {
+            mContainer.startAnimation(animation);
+        }
+
+        @Override
+        public void clearAnimation() {
+            mContainer.clearAnimation();
+        }
+    }
+
+    private class AdvertisementItemViewHolder extends RecyclerView.ViewHolder implements ViewHolderAnimations {
+
+        private final CardView mContainer;
+        private final TextView mTitle;
+        private final ImageView mImageView;
+
+        public AdvertisementItemViewHolder(final View view) {
+            super(view);
+            mContainer = (CardView) view.findViewById(R.id.cv_ad_item_container);
+            mTitle = (TextView) view.findViewById(R.id.tv_title);
+            mImageView = (ImageView) view.findViewById(R.id.iv_image);
+        }
+
+        void setTitle(final String text) {
+            mTitle.setText(getMarkupStrippedString(text));
+        }
+
+        void setImage(final String imageUrl) {
+            mImageLoader.cancelRequest(mImageView);
+            mImageLoader.load(imageUrl)
+                .placeholder(R.drawable.empty)
+                .error(R.drawable.empty)
+                .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
+                    .use(PicassoPalette.Profile.VIBRANT_LIGHT)
+                    .intoTextColor(mTitle, PicassoPalette.Swatch.BODY_TEXT_COLOR)
+                    .use(PicassoPalette.Profile.MUTED_DARK)
+                    .intoCallBack(palette -> {
+                        final Palette.Swatch swatch = palette.getDarkMutedSwatch();
+                        if (swatch != null) {
+                            mTitle.setBackgroundColor(
+                                ColorUtils.setAlphaComponent(swatch.getRgb(), 200));
+                        }
+                    }));
         }
 
         @Override

@@ -1,6 +1,7 @@
 package com.sebaslogen.blendletje.ui.presenters;
 
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
+import com.sebaslogen.blendletje.domain.model.Advertisement;
 import com.sebaslogen.blendletje.domain.model.Article;
 import com.sebaslogen.blendletje.domain.model.ListItem;
 
@@ -63,12 +64,19 @@ public class MainPresenter implements MainContract.UserActions {
     }
 
     private List<ListItem> addAdvertisements(final List<Article> articles) {
-        final List<ListItem> items = new ArrayList<>(articles);
+        final List<ListItem> items = new ArrayList<>(articles.size());
         try { // Fake delay caused by loading advertisements
             Thread.sleep(700 + (new Random()).nextInt(1000));
         } catch (final InterruptedException ignored) {
         }
         // TODO: Fill items list with advertisements
+        final Random randomGenerator = new Random();
+        for (final Article article : articles) {
+            if (randomGenerator.nextInt(10) % 3 == 0) {
+                items.add(new Advertisement("Buy now, or later, or never!"));
+            }
+            items.add(article);
+        }
         return items;
     }
 

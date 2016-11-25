@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
 
     @Override
     public void displayPopularArticlesList(@NonNull final List<ListItem> popularArticlesList) {
-        // TODO: Use payload to notify changes instead of recreating
         if (mItemsListAdapter == null) {
             mItemsListAdapter = new ItemsListAdapter(popularArticlesList, mImageLoader,
                 (view, id, title, imageUrl) -> {
@@ -98,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 });
             mPopularArticlesRV.setAdapter(mItemsListAdapter);
         } else {
+            // TODO: Use payload to notify changes instead of recreating
             mItemsListAdapter.overwriteList(popularArticlesList);
         }
     }
