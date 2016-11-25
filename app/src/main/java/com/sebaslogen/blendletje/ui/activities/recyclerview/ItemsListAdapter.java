@@ -2,6 +2,8 @@ package com.sebaslogen.blendletje.ui.activities.recyclerview;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.support.v4.graphics.ColorUtils;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.github.florent37.picassopalette.PicassoPalette;
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.domain.model.Article;
 import com.sebaslogen.blendletje.domain.model.ArticleImage;
@@ -32,10 +35,10 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private static final short VIEW_TYPE_ARTICLE = 0;
     private static final short VIEW_TYPE_ADVERTISEMENT = 1;
-    private List<ListItem> mItemsList;
     private final ImageLoader mImageLoader;
     private final Func4<View, String, String, String, Void> mItemClick;
     private final DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
+    private List<ListItem> mItemsList;
     private int mLastPosition = -1; // Remember the last item shown on screen for animations
 
     /**
@@ -144,7 +147,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         private final CardView mContainer;
         private final TextView mTitle;
-        private final ImageView mImage;
+        private final ImageView mImageView;
         private final String mDefaultImageContentDescription;
         private final FrameLayout.LayoutParams mDefaultLayoutParams;
 
@@ -152,25 +155,33 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(view);
             mContainer = (CardView) view.findViewById(R.id.cv_item_container);
             mTitle = (TextView) view.findViewById(R.id.tv_title);
-            mImage = (ImageView) view.findViewById(R.id.iv_image);
+            mImageView = (ImageView) view.findViewById(R.id.iv_image);
             mDefaultImageContentDescription = view.getResources().getString(R.string.article_image_description);
             mDefaultLayoutParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
         void setTitle(final String text) {
             mTitle.setText(getMarkupStrippedString(text));
         }
 
-        void setImage(final String url, final int height, final String caption) {
-            mImage.setContentDescription(caption);
-            mImage.setLayoutParams(new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    height));
-            mImageLoader.cancelRequest(mImage);
-            mImageLoader.load(url)
-                    .placeholder(R.drawable.empty)
-                    .error(R.drawable.empty)
-                    .into(mImage);
+        void setImage(final String imageUrl, final int height, final String caption) {
+            mImageView.setContentDescription(caption);
+            mImageView.setLayoutParams(new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                height)); // Prepare container size so it's already correct before image is loaded
+            mImageLoader.cancelRequest(mImageView);
+            mImageLoader.load(imageUrl)
+                .placeholder(R.drawable.empty)
+                .error(R.drawable.empty)
+                .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
+                    .use(PicassoPalette.Profile.MUTED_DARK)
+                    .intoCallBack(palette -> {
+                        final Palette.Swatch swatch = palette.getDarkMutedSwatch();
+                        if (swatch != null) {
+                            mTitle.setBackgroundColor(
+                                ColorUtils.setAlphaComponent(swatch.getRgb(), 200));
+                        }
+                    }));
         }
 
         void setClickAction(final Func4<View, String, String, String, Void> itemClick,
@@ -179,10 +190,10 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
 
         void clearImage() {
-            mImageLoader.cancelRequest(mImage);
-            mImage.setLayoutParams(mDefaultLayoutParams);
-            mImage.setContentDescription(mDefaultImageContentDescription);
-            mImage.setImageDrawable(null);
+            mImageLoader.cancelRequest(mImageView);
+            mImageView.setLayoutParams(mDefaultLayoutParams);
+            mImageView.setContentDescription(mDefaultImageContentDescription);
+            mImageView.setImageDrawable(null);
         }
 
         @Override
