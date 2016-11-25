@@ -136,5 +136,19 @@ public class MainActivityTest {
         articlePage.checkTitleIs(article.contents().title());
     }
 
+    @Test
+    public void tappingBackOnArticle_goesBackToList() throws Exception {
+        // Given I navigate to an article
+        final MainActivity mainActivity = activityTestRule.launchActivity(null);
+        final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
+        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(popularArticlesList));
+        final MainPage mainPage = new MainPage();
+        final ArticlePage articlePage = mainPage.openArticle(0);
+        // When I press back
+        final MainPage returningPage = articlePage.pressBack();
+        // Then the article is opened
+        returningPage.checkArticleItemsAreShown(popularArticlesList);
+    }
+
     // TODO: Add negative test cases and add hermetic unit test cases mocking layers below
 }

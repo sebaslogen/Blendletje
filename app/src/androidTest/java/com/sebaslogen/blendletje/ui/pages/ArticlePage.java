@@ -1,5 +1,7 @@
 package com.sebaslogen.blendletje.ui.pages;
 
+import android.support.test.espresso.Espresso;
+
 import com.sebaslogen.blendletje.R;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -29,5 +31,10 @@ public class ArticlePage {
 
     public void checkTitleIs(final String title) {
         onView(allOf(withId(R.id.tv_title), withText(title))).check(matches(isDisplayed()));
+    }
+
+    public MainPage pressBack() {
+        Espresso.pressBack();
+        return new MainPage();
     }
 }

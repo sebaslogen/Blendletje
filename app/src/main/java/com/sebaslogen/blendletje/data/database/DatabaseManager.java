@@ -77,9 +77,11 @@ public class DatabaseManager implements ArticlesDataSource {
         try (Realm realm = mDatabaseGetter.call()) {
             final RealmResults<ArticleResource> articleResources =
                 realm.where(ArticleResource.class).equalTo("id", articleResource.id()).findAll();
-            articleResources.deleteAllFromRealm(); // Delete any previous instance of the object in DB
-            optimizeCache(realm);
-            realm.executeTransaction(transaction -> transaction.copyToRealm(articleResource));
+            realm.executeTransaction(transaction -> {
+                articleResources.deleteAllFromRealm(); // Delete any previous instance of the object in DB
+                optimizeCache(realm);
+                transaction.copyToRealm(articleResource);
+            });
         }
     }
 
