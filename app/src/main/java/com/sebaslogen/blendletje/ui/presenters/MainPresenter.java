@@ -6,6 +6,7 @@ import com.sebaslogen.blendletje.domain.model.ListItem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import javax.inject.Named;
 
@@ -64,7 +65,7 @@ public class MainPresenter implements MainContract.UserActions {
     private List<ListItem> addAdvertisements(final List<Article> articles) {
         final List<ListItem> items = new ArrayList<>(articles);
         try { // Fake delay caused by loading advertisements
-            Thread.sleep(1500);
+            Thread.sleep(700 + (new Random()).nextInt(1000));
         } catch (final InterruptedException ignored) {
         }
         // TODO: Fill items list with advertisements

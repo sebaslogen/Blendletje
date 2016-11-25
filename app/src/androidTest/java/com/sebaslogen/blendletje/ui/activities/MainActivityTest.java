@@ -12,8 +12,11 @@ import com.sebaslogen.blendletje.dependency.injection.modules.ApplicationModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.CommandsModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.DatabaseModule;
 import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
+import com.sebaslogen.blendletje.domain.model.Article;
 import com.sebaslogen.blendletje.domain.model.ListItem;
+import com.sebaslogen.blendletje.ui.pages.ArticlePage;
 import com.sebaslogen.blendletje.ui.pages.MainPage;
+import com.sebaslogen.blendletje.ui.presenters.ArticlePresenter;
 import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
 import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 import com.sebaslogen.blendletje.ui.utils.SystemAnimations;
@@ -45,26 +48,32 @@ import static org.mockito.Mockito.mock;
 public class MainActivityTest {
 
     private final BlendletjeApp mApp = (BlendletjeApp) InstrumentationRegistry.getInstrumentation()
-            .getTargetContext()
-            .getApplicationContext();
+        .getTargetContext()
+        .getApplicationContext();
     @Rule
     public ActivityTestRule<MainActivity> activityTestRule = new ActivityTestRule<>(MainActivity.class,
-            false,  // initialTouchMode
-            false); // launchActivity: false to set intent per test
+        false,  // initialTouchMode
+        false); // launchActivity: false to set intent per test
+    @Rule
+    public ActivityTestRule<ArticleActivity> articleActivityTestRule = new ActivityTestRule<>(ArticleActivity.class,
+        false,  // initialTouchMode
+        false); // launchActivity: false to set intent per test
     @Rule
     public DaggerMockRule<CommandsComponent> daggerRule =
-            new DaggerMockRule<>(CommandsComponent.class,
-                    new ApplicationModule(mApp),
-                    new NetworkModule("mocked", RxJavaCallAdapterFactory.
-                            createWithScheduler(Schedulers.immediate())),
-                    new DatabaseModule(mock(RealmConfiguration.class)),
-                    new CommandsModule())
-                    .set(mApp::setComponent);
+        new DaggerMockRule<>(CommandsComponent.class,
+            new ApplicationModule(mApp),
+            new NetworkModule("http://mock.domain", RxJavaCallAdapterFactory.
+                createWithScheduler(Schedulers.immediate())),
+            new DatabaseModule(mock(RealmConfiguration.class)),
+            new CommandsModule())
+            .set(mApp::setComponent);
     // @Mock annotated fields are injected automatically by DaggerMockRule instead of @Provides methods
     @Mock
     ImageLoader mImageLoader;
     @Mock
     MainPresenter mMainPresenter;
+    @Mock
+    ArticlePresenter mArticlePresenter;
     private SystemAnimations mSystemAnimations;
 
     public MainActivityTest() throws IOException {
@@ -73,7 +82,7 @@ public class MainActivityTest {
     @Before
     public void setUp() throws Exception {
         mSystemAnimations = new SystemAnimations(InstrumentationRegistry.getInstrumentation()
-                .getTargetContext());
+            .getTargetContext());
         mSystemAnimations.disableAll();
         // Load local Logo drawable resource for all image load requests
         final Picasso picasso = Picasso.with(mApp);
@@ -91,26 +100,40 @@ public class MainActivityTest {
 
     @Test
     public void onDataLoaded_loadingAnimationDisappears() throws Exception {
-        // Given
+        // Given I open the app
         final MainActivity mainActivity = activityTestRule.launchActivity(null);
-        // When
+        // When the presenter hides the animation
         mainActivity.runOnUiThread(mainActivity::hideLoadingAnimation);
-        // Then
+        // Then the animation is not visible anymore
         final MainPage mainPage = new MainPage();
         mainPage.checkLoadingAnimationIsNotShown();
     }
 
     @Test
     public void onDataLoaded_listOfPopularArticlesIsShownWithArticle() throws Exception {
-        // Given
+        // Given I open the app
         final MainActivity mainActivity = activityTestRule.launchActivity(null);
         final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
-        // When
-        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(
-                popularArticlesList));
-        // Then
+        // When I load a list of articles
+        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(popularArticlesList));
+        // Then the same list of articles is shown
         final MainPage mainPage = new MainPage();
         mainPage.checkArticleItemsAreShown(popularArticlesList);
+    }
+
+    @Test
+    public void tapOnArticle_opensArticle() throws Exception {
+        // Given a list of articles is displayed
+        final MainActivity mainActivity = activityTestRule.launchActivity(null);
+        final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
+        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(
+            popularArticlesList));
+        final Article article = (Article) popularArticlesList.get(0);
+        // When I click on one
+        final MainPage mainPage = new MainPage();
+        final ArticlePage articlePage = mainPage.openArticle(0);
+        // Then the article is opened
+        articlePage.checkTitleIs(article.contents().title());
     }
 
     // TODO: Add negative test cases and add hermetic unit test cases mocking layers below

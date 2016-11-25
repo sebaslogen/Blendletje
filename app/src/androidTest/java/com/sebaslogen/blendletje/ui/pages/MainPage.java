@@ -1,5 +1,7 @@
 package com.sebaslogen.blendletje.ui.pages;
 
+import android.support.test.espresso.contrib.RecyclerViewActions;
+
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.recyclerview.RecyclerViewInteraction;
@@ -7,6 +9,7 @@ import com.sebaslogen.blendletje.ui.recyclerview.RecyclerViewInteraction;
 import java.util.List;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -34,6 +37,12 @@ public class MainPage {
         onView(allOf(isDescendantOfA(withId(R.id.tb_toolbar)),
                 withText(R.string.popular_articles_title)))
                 .check(matches(isDisplayed()));
+    }
+
+    public ArticlePage openArticle(final int articleIndex) {
+        onView(withId(R.id.rv_popular_articles_list)).
+            perform(RecyclerViewActions.actionOnItemAtPosition(articleIndex, click()));
+        return new ArticlePage();
     }
 
     public void checkLoadingAnimationIsNotShown() {

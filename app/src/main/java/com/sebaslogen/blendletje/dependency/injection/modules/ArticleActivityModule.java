@@ -5,9 +5,11 @@ import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.ui.activities.ArticleActivity;
 import com.sebaslogen.blendletje.ui.presenters.ArticleContract;
 import com.sebaslogen.blendletje.ui.presenters.ArticlePresenter;
+
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
-import javax.inject.Named;
 import rx.Scheduler;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
