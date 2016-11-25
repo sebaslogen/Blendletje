@@ -75,7 +75,6 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         @SuppressWarnings("unchecked") final ActivityOptionsCompat options =
             getActivityTransitionOptions(activity, imageView, textView, toolbarView, id);
         ActivityCompat.startActivity(activity, intent, options.toBundle());
-//        ActivityCompat.startActivity(activity, intent, null);
     }
 
     @NonNull
@@ -142,6 +141,7 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
             .inject(this);
 
         if (imageUrl != null) {
+            mCollapsingToolbarLayout.setBackgroundResource(R.color.transparent);
             loadMainImage(imageUrl);
         } else {
             supportStartPostponedEnterTransition();

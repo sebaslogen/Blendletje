@@ -194,6 +194,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mImageView.setLayoutParams(mDefaultLayoutParams);
             mImageView.setContentDescription(mDefaultImageContentDescription);
             mImageView.setImageDrawable(null);
+            mTitle.setBackgroundResource(R.color.article_title_background);
         }
 
         @Override
