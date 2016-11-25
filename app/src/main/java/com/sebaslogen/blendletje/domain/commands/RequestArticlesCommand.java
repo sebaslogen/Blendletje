@@ -52,16 +52,31 @@ public class RequestArticlesCommand {
         final Observable<PopularArticlesResource>
                 localDBPopularArticlesObservable = getPopularArticlesFromLocalDB(amount, page);
         final Observable<PopularArticlesResource> popularArticlesObservable =
-            getPopularArticlesFromCombinedSources(remotePopularArticlesObservable,
-                localDBPopularArticlesObservable);
+                getPopularArticlesFromCombinedSources(remotePopularArticlesObservable,
+                        localDBPopularArticlesObservable);
         return popularArticlesObservable
                 .distinct() // Avoid emitting twice when the network is down
                 .map(ArticlesDataMapper::convertPopularArticlesListToDomain); // Map data to domain
     }
 
-    @NonNull private Observable<PopularArticlesResource> getPopularArticlesFromCombinedSources(
-        Observable<PopularArticlesResource> remotePopularArticlesObservable,
-        Observable<PopularArticlesResource> localDBPopularArticlesObservable) {
+    /**
+     * The behaviour of this method is to take two sources of the same type of observable items
+     * and emit them following these steps
+     * 1- Publish a shared observable, N, from the original network observable and subscribe to it
+     * 2- Simultaneously subscribe to the local database observable L and merge the results of L and N
+     * 3- Subscription to L will conditionally stop as soon as any event (item, error or completion)
+     * is emitted by other observable N
+     * 4- Only in the case a network error stops the stream of N, then observable L will be emitted
+     * unconditionally
+     *
+     * @param remotePopularArticlesObservable  Remote observable to fetch results from the network
+     * @param localDBPopularArticlesObservable Local observable to fetch results from the database
+     * @return New observable combining both sources of information
+     */
+    @NonNull
+    private Observable<PopularArticlesResource> getPopularArticlesFromCombinedSources(
+            final Observable<PopularArticlesResource> remotePopularArticlesObservable,
+            final Observable<PopularArticlesResource> localDBPopularArticlesObservable) {
         return remotePopularArticlesObservable.publish(remotePopularArticles ->
                 Observable.merge(remotePopularArticles, // Merge network and local
                         localDBPopularArticlesObservable // but stop local as soon as network emits

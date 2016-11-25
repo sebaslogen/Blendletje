@@ -101,3 +101,8 @@ dependencies {
         exclude module: 'design'
     }
 }
+
+tasks.matching {it instanceof Test}.all { // Show more test execution information
+    testLogging.events = ["failed", "passed", "skipped"]
+    testLogging.exceptionFormat "full"
+}

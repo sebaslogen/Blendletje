@@ -15,6 +15,7 @@ import io.realm.RealmResults;
 import rx.Observable;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Func0;
+import timber.log.Timber;
 
 /**
  * This class encapsulates all the database read and write access,
@@ -45,17 +46,18 @@ public class DatabaseManager implements ArticlesDataSource {
     public void storeObject(final PopularArticlesResource popularArticlesResource) {
         // Try with resources makes sure DB is closed after using it
         try (Realm realm = mDatabaseGetter.call()) {
-            realm.executeTransaction(db -> {
+            realm.executeTransaction(transaction -> {
                 realm.delete(PopularArticlesResource.class);
-                db.copyToRealm(popularArticlesResource);
+                transaction.copyToRealm(popularArticlesResource);
             });
-        } catch (Exception e) {
-            final int d = e.hashCode(); // TODO handle exception
+        } catch (final Exception error) {
+            Timber.e(error, "Error storing PopularArticlesResource into database");
         }
     }
 
     public void storeObject(final ArticleResource articleResource) {
         try (Realm realm = mDatabaseGetter.call()) {
+            // TODO: Store same object (by id) only once
             realm.executeTransaction(db -> db.copyToRealm(articleResource));
         }
     }
@@ -73,7 +75,7 @@ public class DatabaseManager implements ArticlesDataSource {
                 RealmResults<PopularArticlesResource> popularArticlesResources =
                         realm.where(PopularArticlesResource.class).findAll();
                 if (popularArticlesResources.isEmpty()) {
-                    return null;
+                    return null; // When no results return null and filter it out at the end of this method
                 }
                 return realm.copyFromRealm(popularArticlesResources).get(0); // Copy as immutable value
             }

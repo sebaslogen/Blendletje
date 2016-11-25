@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                     });
             mPopularArticlesRV.setAdapter(mItemsListAdapter);
         } else {
-//            mItemsListAdapter.updateList(popularArticlesList); // TODO: Fix diffUtil bug
             mItemsListAdapter.overwriteList(popularArticlesList);
         }
     }

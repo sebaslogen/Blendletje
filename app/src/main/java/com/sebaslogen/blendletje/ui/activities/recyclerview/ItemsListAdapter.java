@@ -2,7 +2,6 @@ package com.sebaslogen.blendletje.ui.activities.recyclerview;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -131,11 +130,6 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void overwriteList(final List<ListItem> newList) {
         mItemsList = newList;
         notifyDataSetChanged();
-    }
-
-    public void updateList(final List<ListItem> newList) {
-        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ArticlesDiffUtilCallback(mItemsList, newList));
-        diffResult.dispatchUpdatesTo(this);
     }
 
     private interface ViewHolderAnimations {
