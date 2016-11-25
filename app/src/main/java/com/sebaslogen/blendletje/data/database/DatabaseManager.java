@@ -2,16 +2,13 @@ package com.sebaslogen.blendletje.data.database;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
 import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
-
-import java.io.IOException;
-
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
+import java.io.IOException;
 import rx.Observable;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Func0;
@@ -23,6 +20,10 @@ import timber.log.Timber;
  */
 public class DatabaseManager implements ArticlesDataSource {
 
+    /**
+     * This constant indicates the maximum amount of articles to store as cache in the database
+     */
+    private static final int MAX_ARTICLES_IN_CACHE = 100;
     private final Func0<Realm> mDatabaseGetter;
     private final RealmConfiguration mDatabaseConfig;
 
@@ -43,6 +44,13 @@ public class DatabaseManager implements ArticlesDataSource {
         mDatabaseGetter = databaseGetter;
     }
 
+    /**
+     * Store a PopularArticlesResource object containing a list of popular articles
+     * This list is stored as a unique object, so every store of a new object will
+     * overwrite any existing object.
+     *
+     * @param popularArticlesResource object containing a list of popular articles to store
+     */
     public void storeObject(final PopularArticlesResource popularArticlesResource) {
         // Try with resources makes sure DB is closed after using it
         try (Realm realm = mDatabaseGetter.call()) {
@@ -55,10 +63,35 @@ public class DatabaseManager implements ArticlesDataSource {
         }
     }
 
+    /**
+     * Store an individual article in the database making sure the cache it's always inside the
+     * defined limits of MAX_ARTICLES_IN_CACHE
+     * If a version of the article was already stored, it will be overwritten
+     *
+     * @param articleResource Article to store
+     */
     public void storeObject(final ArticleResource articleResource) {
         try (Realm realm = mDatabaseGetter.call()) {
-            // TODO: Store same object (by id) only once
-            realm.executeTransaction(db -> db.copyToRealm(articleResource));
+            RealmResults<ArticleResource> articleResources =
+                realm.where(ArticleResource.class).equalTo("id", articleResource.id()).findAll();
+            articleResources.deleteAllFromRealm(); // Delete any previous instance of the object in DB
+            optimizeCache(realm);
+            realm.executeTransaction(transaction -> transaction.copyToRealm(articleResource));
+        }
+    }
+
+    /**
+     * When the amount of article items in database exceeds the cache limit,
+     * then delete half of the oldest items in  the database
+     *
+     * @param realm Database from which to check and clear some elements
+     */
+    private void optimizeCache(final Realm realm) {
+        final RealmResults<ArticleResource> articleResources = realm.where(ArticleResource.class).findAll();
+        if (articleResources.size() >= MAX_ARTICLES_IN_CACHE) {
+            for (int i = 0; i < articleResources.size() / 2 ; i++) {
+                articleResources.deleteFirstFromRealm();
+            }
         }
     }
 
@@ -86,10 +119,8 @@ public class DatabaseManager implements ArticlesDataSource {
     public Observable<ArticleResource> requestArticle(@NonNull final String id) {
         return Observable.fromCallable((Func0<ArticleResource>) () -> {
             try (Realm realm = mDatabaseGetter.call()) {
-                RealmResults<ArticleResource> articleResources =
-                        realm.where(ArticleResource.class)
-                                .equalTo("id", id) // Search and find object in DB
-                                .findAll();
+                RealmResults<ArticleResource> articleResources = // Search and find object in DB
+                        realm.where(ArticleResource.class).equalTo("id", id).findAll();
                 if (articleResources.isEmpty()) {
                     return null;
                 }

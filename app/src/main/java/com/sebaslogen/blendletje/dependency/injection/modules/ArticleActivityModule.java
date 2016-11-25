@@ -16,9 +16,11 @@ import rx.schedulers.Schedulers;
 public class ArticleActivityModule {
 
     private final ArticleActivity mArticleActivity;
+    private final String mArticleId;
 
-    public ArticleActivityModule(final ArticleActivity mainActivity) {
+    public ArticleActivityModule(final ArticleActivity mainActivity, final String articleId) {
         mArticleActivity = mainActivity;
+        mArticleId = articleId;
     }
 
     @Provides
@@ -32,7 +34,8 @@ public class ArticleActivityModule {
     public ArticlePresenter provideArticleActivityPresenter(@Named("io") final Scheduler ioScheduler,
                                                             @Named("ui") final Scheduler uiScheduler,
             final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
-        return new ArticlePresenter(mArticleActivity, ioScheduler, uiScheduler, requestArticlesCommandBuilder);
+        return new ArticlePresenter(mArticleActivity, mArticleId, ioScheduler, uiScheduler,
+            requestArticlesCommandBuilder);
     }
 
     @Provides

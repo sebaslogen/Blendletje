@@ -48,18 +48,16 @@ public class MainPresenter implements MainContract.UserActions {
     }
 
     private void loadPopularArticles() {
-        final Subscription subscription = mRequestArticlesCommandBuilder
-                .createRequestArticlesCommand()
+        final Subscription subscription =
+            mRequestArticlesCommandBuilder.createRequestArticlesCommand()
                 .getPopularArticles(null, null)
                 .map(this::addAdvertisements)
                 .subscribeOn(mIOScheduler)
                 .observeOn(mUIScheduler)
-                .subscribe(this::showArticles,
-                        throwable -> {
-                            // TODO: Handle error loading in UI
-                            Timber.e(throwable,
-                                    "Error loading list of articles loaded and thrown to UI");
-                        });
+                .subscribe(this::showArticles, throwable -> {
+                    // TODO: Handle error loading in UI
+                    Timber.e(throwable, "Error loading list of articles");
+                });
         mSubscriptions.add(subscription);
     }
 

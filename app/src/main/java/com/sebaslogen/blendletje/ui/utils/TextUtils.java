@@ -21,13 +21,13 @@ public class TextUtils {
 
     @NonNull
     public static Spanned getSpannedString(@NonNull final String text) {
-        final Spanned strippedText;
+        final Spanned spanned;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            strippedText = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
+            spanned = Html.fromHtml(text, Html.FROM_HTML_MODE_COMPACT);
         } else {
             //noinspection deprecation
-            strippedText = Html.fromHtml(text);
+            spanned = Html.fromHtml(text);
         }
-        return strippedText;
+        return spanned;
     }
 }

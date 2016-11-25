@@ -1,6 +1,8 @@
 package com.sebaslogen.blendletje.ui.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,18 +20,17 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.github.florent37.picassopalette.PicassoPalette;
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.dependency.injection.modules.ArticleActivityModule;
+import com.sebaslogen.blendletje.domain.model.Article;
+import com.sebaslogen.blendletje.domain.model.ArticleContent;
 import com.sebaslogen.blendletje.ui.presenters.ArticleContract;
 import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 import com.sebaslogen.blendletje.ui.utils.TextUtils;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.inject.Inject;
 
 public class ArticleActivity extends AppCompatActivity implements ArticleContract.ViewActions {
@@ -44,6 +45,9 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
     ImageLoader mImageLoader;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private ImageView mImageView;
+    private Drawable mLoadingAnimationDrawable;
+    private ImageView mLoadAnimationView;
+    private TextView mTextContentView;
 
     /**
      * Method to navigate and animate transition to this screen
@@ -97,14 +101,14 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         setContentView(R.layout.activity_article);
         supportPostponeEnterTransition();
 
-        final String id = getIntent().getStringExtra(ARTICLE_ID);
+        final String articleId = getIntent().getStringExtra(ARTICLE_ID);
         final String imageUrl = getIntent().getStringExtra(EXTRA_ARTICLE_IMAGE);
         if (imageUrl != null) {
-            ViewCompat.setTransitionName(findViewById(R.id.iv_article), EXTRA_ARTICLE_IMAGE + id);
+            ViewCompat.setTransitionName(findViewById(R.id.iv_article), EXTRA_ARTICLE_IMAGE + articleId);
         }
 
         final Toolbar toolbar = (Toolbar) findViewById(R.id.tb_toolbar_article);
-        ViewCompat.setTransitionName(toolbar, TOOLBAR_TRANSITION_NAME + id);
+        ViewCompat.setTransitionName(toolbar, TOOLBAR_TRANSITION_NAME + articleId);
         setSupportActionBar(toolbar);
         //noinspection ConstantConditions
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -118,9 +122,12 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         final TextView title = (TextView) findViewById(R.id.tv_title);
         title.setText(TextUtils.getSpannedString(articleTitle));
         mImageView = (ImageView) findViewById(R.id.iv_article);
+        mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
+        mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
+        mTextContentView = (TextView) findViewById(R.id.tv_content);
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
-                .plus(new ArticleActivityModule(this))
+                .plus(new ArticleActivityModule(this, articleId))
                 .inject(this);
 
         if (imageUrl != null) {
@@ -157,6 +164,38 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         mImageLoader.cancelRequest(mImageView);
         mUserActions.deAttachView();
         super.onPause();
+    }
+
+    @Override
+    public void showLoadingAnimation() {
+        mLoadAnimationView.setVisibility(View.VISIBLE);
+        if (mLoadingAnimationDrawable instanceof Animatable) {
+            final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
+            animationDrawable.start();
+        }
+    }
+
+    @Override
+    public void hideLoadingAnimation() {
+        if (mLoadingAnimationDrawable instanceof Animatable) {
+            final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
+            animationDrawable.stop();
+        }
+        mLoadAnimationView.setVisibility(View.GONE);
+    }
+
+    @Override public void displayArticle(Article article) {
+        final ArticleContent contents = article.contents();
+        if (contents != null) {
+            CharSequence sequence = "";
+            for (final String paragraph : contents.paragraphs()) {
+                sequence = android.text.TextUtils.concat(sequence, "<p>", paragraph);
+            } // Twice to fill the screen with more fake content
+            for (final String paragraph : contents.paragraphs()) {
+                sequence = android.text.TextUtils.concat(sequence, "<p>", paragraph);
+            }
+            mTextContentView.setText(TextUtils.getSpannedString(sequence.toString()));
+        }
     }
 
     private void setupActivityTransitions() {

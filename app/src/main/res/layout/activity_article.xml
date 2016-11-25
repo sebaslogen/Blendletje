@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cl_activity_article"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -63,8 +64,10 @@
                 app:cardUseCompatPadding="true">
 
                 <LinearLayout
+                    android:id="@+id/ll_article_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
                     android:orientation="vertical">
 
                     <TextView
@@ -76,13 +79,23 @@
                         android:layout_marginTop="@dimen/spacing_large"
                         android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
+                    <ImageView
+                        android:id="@+id/iv_animation"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:contentDescription="@string/animated_image_description"
+                        android:src="@drawable/animated_blendle_logo"
+                        android:visibility="gone"
+                        tools:visibility="visible"/>
+
                     <TextView
                         android:id="@+id/tv_content"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/spacing_large"
-                        android:text="Sample text content that has to be removed and replaced by other content..."
-                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        tools:text="Sample text content that has to be removed and replaced by other content..."/>
 
                 </LinearLayout>
 
