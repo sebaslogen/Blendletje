@@ -16,6 +16,10 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import rx.Observable;
 
+/**
+ * Class implementing access to data through a network API to provide
+ * lists of popular articles and individual articles
+ */
 public class ArticlesServer implements ArticlesDataSource {
 
     private final HttpUrl mBaseUrl;
@@ -38,8 +42,6 @@ public class ArticlesServer implements ArticlesDataSource {
                 .addConverterFactory(HALConverterFactory.create(PopularArticlesResource.class))
                 .build();
         final BlendleAPI blendleAPI = retrofit.create(BlendleAPI.class);
-
-        // Then I get a response and the response is parsed correctly
         return blendleAPI.popularArticles().execute().body();
     }
 

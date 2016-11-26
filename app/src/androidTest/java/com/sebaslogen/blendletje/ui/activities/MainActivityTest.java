@@ -55,10 +55,6 @@ public class MainActivityTest {
         false,  // initialTouchMode
         false); // launchActivity: false to set intent per test
     @Rule
-    public ActivityTestRule<ArticleActivity> articleActivityTestRule = new ActivityTestRule<>(ArticleActivity.class,
-        false,  // initialTouchMode
-        false); // launchActivity: false to set intent per test
-    @Rule
     public DaggerMockRule<CommandsComponent> daggerRule =
         new DaggerMockRule<>(CommandsComponent.class,
             new ApplicationModule(mApp),
@@ -102,8 +98,10 @@ public class MainActivityTest {
     public void onDataLoaded_loadingAnimationDisappears() throws Exception {
         // Given I open the app
         final MainActivity mainActivity = activityTestRule.launchActivity(null);
+
         // When the presenter hides the animation
         mainActivity.runOnUiThread(mainActivity::hideLoadingAnimation);
+
         // Then the animation is not visible anymore
         final MainPage mainPage = new MainPage();
         mainPage.checkLoadingAnimationIsNotShown();
@@ -114,8 +112,10 @@ public class MainActivityTest {
         // Given I open the app
         final MainActivity mainActivity = activityTestRule.launchActivity(null);
         final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
+
         // When I load a list of articles
         mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(popularArticlesList));
+
         // Then the same list of articles is shown
         final MainPage mainPage = new MainPage();
         mainPage.checkArticleItemsAreShown(popularArticlesList);
@@ -129,9 +129,11 @@ public class MainActivityTest {
         mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(
             popularArticlesList));
         final Article article = (Article) popularArticlesList.get(0);
+
         // When I click on one
         final MainPage mainPage = new MainPage();
         final ArticlePage articlePage = mainPage.openArticle(0);
+
         // Then the article is opened
         articlePage.checkTitleIs(article.contents().title());
     }
@@ -144,8 +146,10 @@ public class MainActivityTest {
         mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(popularArticlesList));
         final MainPage mainPage = new MainPage();
         final ArticlePage articlePage = mainPage.openArticle(0);
+
         // When I press back
         final MainPage returningPage = articlePage.pressBack();
+
         // Then the article is opened
         returningPage.checkArticleItemsAreShown(popularArticlesList);
     }

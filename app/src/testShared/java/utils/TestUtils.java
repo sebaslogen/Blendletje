@@ -26,7 +26,7 @@ public class TestUtils {
                 .setResponseCode(HttpURLConnection.HTTP_OK)
                 .setBody(responseBody));
         mockWebServer.start();
-        // Ask the mServer for its URL. You'll need this to make HTTP requests.
+        // Ask the Server for its URL. You'll need this to make HTTP requests.
         return mockWebServer.url("/");
     }
 

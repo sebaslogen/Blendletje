@@ -46,8 +46,10 @@ public class MainPresenterTest {
         // Given there is a presenter
         final MainPresenter presenter = spy(new MainPresenter(mViewActions, Schedulers.immediate(),
                 Schedulers.immediate(), getMockedRequestCommandBuilder()));
+
         // When the view is attached
         presenter.attachView();
+
         // Then
         verify(mViewActions).displayPopularArticlesList(anyListOf(ListItem.class));
     }
