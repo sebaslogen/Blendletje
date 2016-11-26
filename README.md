@@ -9,7 +9,7 @@ The client will load automatically the most popular articles from Blendle API, w
 
 Technical features
 ============
-The code demostrates how to use together multiple design patterns, libraries, automated tests on the Java virtual machine and on the UI using Espresso
+The code demostrates how to use together multiple design patterns, libraries, automated tests on the Java virtual machine and on the UI using Espresso.
 
 Libraries
 -------
@@ -38,6 +38,8 @@ Patterns
 
 Running the project and the tests
 =============
+Application's apk can be directly [downloaded from here](https://github.com/sebaslogen/Blendletje/raw/master/releases/app-debug.apk).
+
 Open the project in Android Studio and select the gradle task '**installDebug**' or simply press the Run button.
 
 To run all the tests from the command line execute ```./gradlew check connectedCheck``` from the project's folder.
