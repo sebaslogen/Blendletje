@@ -59,11 +59,11 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         switch (viewType) {
             case VIEW_TYPE_ARTICLE:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.article_item, parent, false);
-                return new ArticleItemViewHolder(view);
+                return new ArticleItemViewHolder(view, mImageLoader);
             case VIEW_TYPE_ADVERTISEMENT:
             default:
                 view = LayoutInflater.from(parent.getContext()).inflate(R.layout.advertisement_item, parent, false);
-                return new AdvertisementItemViewHolder(view);
+                return new AdvertisementItemViewHolder(view, mImageLoader);
         }
     }
 
@@ -152,20 +152,22 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         void clearAnimation();
     }
 
-    private class ArticleItemViewHolder extends RecyclerView.ViewHolder implements ViewHolderAnimations {
+    private static class ArticleItemViewHolder extends RecyclerView.ViewHolder implements ViewHolderAnimations {
 
         private final CardView mContainer;
         private final TextView mTitle;
         private final ImageView mImageView;
         private final String mDefaultImageContentDescription;
         private final FrameLayout.LayoutParams mDefaultLayoutParams;
+        private final ImageLoader mImageLoader;
 
-        ArticleItemViewHolder(final View view) {
+        ArticleItemViewHolder(final View view, final ImageLoader imageLoader) {
             super(view);
             mContainer = (CardView) view.findViewById(R.id.cv_item_container);
             mTitle = (TextView) view.findViewById(R.id.tv_title);
             mImageView = (ImageView) view.findViewById(R.id.iv_image);
             mDefaultImageContentDescription = view.getResources().getString(R.string.article_image_description);
+            this.mImageLoader = imageLoader;
             mDefaultLayoutParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         }
@@ -222,17 +224,19 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         }
     }
 
-    private class AdvertisementItemViewHolder extends RecyclerView.ViewHolder implements ViewHolderAnimations {
+    private static class AdvertisementItemViewHolder extends RecyclerView.ViewHolder implements ViewHolderAnimations {
 
         private final CardView mContainer;
         private final TextView mTitle;
         private final ImageView mImageView;
+        private final ImageLoader mImageLoader;
 
-        public AdvertisementItemViewHolder(final View view) {
+        public AdvertisementItemViewHolder(final View view, final ImageLoader imageLoader) {
             super(view);
             mContainer = (CardView) view.findViewById(R.id.cv_ad_item_container);
             mTitle = (TextView) view.findViewById(R.id.tv_ad_title);
             mImageView = (ImageView) view.findViewById(R.id.iv_ad_image);
+            mImageLoader = imageLoader;
         }
 
         void setTitle(final String text) {
