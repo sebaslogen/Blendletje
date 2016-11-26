@@ -5,6 +5,7 @@ Sample Android project of a [Blendle](https://blendle.com) client.
 
 The client will load automatically the most popular articles from Blendle API, which can be found here: https://static.blendle.nl/api.json
 
+![Demo](https://github.com/sebaslogen/Blendletje/raw/master/screen-record-demo.gif)
 
 Technical features
 ============
@@ -20,9 +21,12 @@ Libraries
 - Realm database
 - Dagger
 - Picasso
+- PicassoPalette
 - Mockito
+- DaggerMock
 - Espresso
 - Timber
+
 
 Patterns
 -------
