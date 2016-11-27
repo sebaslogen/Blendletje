@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.graphics.ColorUtils;
 import android.support.v7.graphics.Palette;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -139,9 +140,11 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return (mItemsList.get(position) instanceof Article) ? VIEW_TYPE_ARTICLE : VIEW_TYPE_ADVERTISEMENT;
     }
 
-    public void overwriteList(final List<ListItem> newList) {
+    public void updateList(final List<ListItem> newList) {
+        // TODO: calculate diff in separate thread for very long lists of items
+        final DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new ArticlesDiffUtilCallback(mItemsList, newList));
         mItemsList = newList;
-        notifyDataSetChanged();
+        diffResult.dispatchUpdatesTo(this);
     }
 
     private interface ViewHolderAnimations {

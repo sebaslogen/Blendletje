@@ -97,8 +97,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                 });
             mPopularArticlesRV.setAdapter(mItemsListAdapter);
         } else {
-            // TODO: Use payload to notify changes instead of recreating
-            mItemsListAdapter.overwriteList(popularArticlesList);
+            mItemsListAdapter.updateList(popularArticlesList);
         }
     }
 

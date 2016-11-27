@@ -55,7 +55,7 @@ public class RequestArticlesCommand {
                 getPopularArticlesFromCombinedSources(remotePopularArticlesObservable,
                         localDBPopularArticlesObservable);
         return popularArticlesObservable
-                .distinct() // Avoid emitting twice when the network is down
+                .distinct() // Avoid emitting twice the same list of items
                 .map(ArticlesDataMapper::convertPopularArticlesListToDomain); // Map data to domain
     }
 

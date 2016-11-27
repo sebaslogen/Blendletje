@@ -9,7 +9,7 @@
     android:layout_gravity="center"
     android:layout_marginBottom="@dimen/list_item_margin"
     android:layout_marginTop="@dimen/list_item_margin"
-    android:foreground="?attr/selectableItemBackground"
+    android:foreground="@drawable/ripple_with_color"
     card_view:cardCornerRadius="@dimen/list_item_corner_radius"
     card_view:cardUseCompatPadding="true">
 
@@ -18,7 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/article_image_description"
-        android:foreground="?attr/selectableItemBackground"
         android:scaleType="centerCrop"
         tools:src="@drawable/logo"/>
 
