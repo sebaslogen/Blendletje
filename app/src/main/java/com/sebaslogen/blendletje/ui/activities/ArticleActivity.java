@@ -15,6 +15,7 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Fade;
 import android.transition.Transition;
@@ -51,10 +52,12 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
     @Inject
     ImageLoader mImageLoader;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
-    private ImageView mImageView;
+    private ImageView mHeaderImageView;
     private Drawable mLoadingAnimationDrawable;
     private ImageView mLoadAnimationView;
     private TextView mTextContentView;
+    private CardView mAdvertisementView;
+    private boolean mShouldShowLoadingAnimation;
 
     /**
      * Method to navigate and animate transition to this screen
@@ -117,9 +120,9 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         final String articleId = getIntent().getStringExtra(ARTICLE_ID);
         final String imageUrl = getIntent().getStringExtra(EXTRA_ARTICLE_IMAGE);
         final TextView title = (TextView) findViewById(R.id.tv_title);
-        mImageView = (ImageView) findViewById(R.id.iv_article);
+        mHeaderImageView = (ImageView) findViewById(R.id.iv_article);
         if (imageUrl != null) {
-            ViewCompat.setTransitionName(mImageView, EXTRA_ARTICLE_IMAGE + articleId);
+            ViewCompat.setTransitionName(mHeaderImageView, EXTRA_ARTICLE_IMAGE + articleId);
         }
         ViewCompat.setTransitionName(title, EXTRA_ARTICLE_TITLE + articleId);
 
@@ -139,6 +142,7 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
         mTextContentView = (TextView) findViewById(R.id.tv_content);
+        mAdvertisementView = (CardView) findViewById(R.id.cv_ad_item_container);
 
         ((BlendletjeApp) getApplication()).getCommandsComponent()
             .plus(new ArticleActivityModule(this, articleId))
@@ -158,7 +162,7 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         mImageLoader.load(imageUrl)
             .placeholder(R.drawable.empty)
             .error(R.drawable.empty)
-            .into(mImageView, PicassoPalette.with(imageUrl, mImageView)
+            .into(mHeaderImageView, PicassoPalette.with(imageUrl, mHeaderImageView)
                 .use(PicassoPalette.Profile.MUTED)
                 .intoCallBack(palette -> mCollapsingToolbarLayout.setContentScrimColor(
                     palette.getMutedColor(primary)))
@@ -178,13 +182,14 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
 
     @Override
     protected void onPause() {
-        mImageLoader.cancelRequest(mImageView);
+        mImageLoader.cancelRequest(mHeaderImageView);
         mUserActions.deAttachView();
         super.onPause();
     }
 
     @Override
     public void showLoadingAnimation() {
+        mShouldShowLoadingAnimation = true;
         mLoadAnimationView.setVisibility(View.VISIBLE);
         if (mLoadingAnimationDrawable instanceof Animatable) {
             final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
@@ -194,6 +199,7 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
 
     @Override
     public void hideLoadingAnimation() {
+        mShouldShowLoadingAnimation = false;
         if (mLoadingAnimationDrawable instanceof Animatable) {
             final Animatable animationDrawable = (Animatable) mLoadingAnimationDrawable;
             animationDrawable.stop();
@@ -219,7 +225,6 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
 
     @Override
     public void displayAdvertisement(final Advertisement advertisement) {
-        findViewById(R.id.cv_ad_item_container).setVisibility(View.VISIBLE);
         final TextView adTitle = (TextView) findViewById(R.id.tv_ad_title);
         adTitle.setText(advertisement.getTitle());
         final ImageView adImage = (ImageView) findViewById(R.id.iv_ad_image);
@@ -246,5 +251,41 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
         fade.excludeTarget(android.R.id.navigationBarBackground, true);
         getWindow().setExitTransition(fade);
         getWindow().setEnterTransition(fade);
+        fade.addListener(new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mLoadAnimationView.setVisibility(View.GONE);
+                mTextContentView.setVisibility(View.GONE);
+                mAdvertisementView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                if (mShouldShowLoadingAnimation) {
+                    mLoadAnimationView.setVisibility(View.VISIBLE);
+                }
+                mTextContentView.setVisibility(View.VISIBLE);
+                mAdvertisementView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                if (mShouldShowLoadingAnimation) {
+                    mLoadAnimationView.setVisibility(View.VISIBLE);
+                }
+                mTextContentView.setVisibility(View.VISIBLE);
+                mAdvertisementView.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+
+            }
+
+            @Override
+            public void onTransitionResume(Transition transition) {
+
+            }
+        });
     }
 }
