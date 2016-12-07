@@ -170,7 +170,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mTitle = (TextView) view.findViewById(R.id.tv_title);
             mImageView = (ImageView) view.findViewById(R.id.iv_image);
             mDefaultImageContentDescription = view.getResources().getString(R.string.article_image_description);
-            this.mImageLoader = imageLoader;
+            mImageLoader = imageLoader;
             mDefaultLayoutParams = new CardView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
         }

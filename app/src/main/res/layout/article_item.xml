@@ -10,7 +10,7 @@
     android:layout_marginBottom="@dimen/list_item_margin"
     android:layout_marginTop="@dimen/list_item_margin"
     android:foreground="@drawable/ripple_with_color"
-    card_view:cardCornerRadius="@dimen/list_item_corner_radius"
+    android:stateListAnimator="@animator/selector_animator"
     card_view:cardUseCompatPadding="true">
 
     <ImageView
