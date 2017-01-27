@@ -1,10 +1,12 @@
 package com.sebaslogen.blendletje.ui.activities;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.widget.ImageView;
 
+import com.linkedin.android.testbutler.TestButler;
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
 import com.sebaslogen.blendletje.dependency.injection.components.CommandsComponent;
@@ -19,10 +21,8 @@ import com.sebaslogen.blendletje.ui.pages.MainPage;
 import com.sebaslogen.blendletje.ui.presenters.ArticlePresenter;
 import com.sebaslogen.blendletje.ui.presenters.MainPresenter;
 import com.sebaslogen.blendletje.ui.utils.ImageLoader;
-import com.sebaslogen.blendletje.ui.utils.SystemAnimations;
 import com.squareup.picasso.Picasso;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -70,16 +70,14 @@ public class MainActivityTest {
     MainPresenter mMainPresenter;
     @Mock
     ArticlePresenter mArticlePresenter;
-    private SystemAnimations mSystemAnimations;
 
     public MainActivityTest() throws IOException {
     }
 
     @Before
     public void setUp() throws Exception {
-        mSystemAnimations = new SystemAnimations(InstrumentationRegistry.getInstrumentation()
-            .getTargetContext());
-        mSystemAnimations.disableAll();
+        final Context targetContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        TestButler.verifyAnimationsDisabled(targetContext);
         // Load local Logo drawable resource for all image load requests
         final Picasso picasso = Picasso.with(mApp);
         doReturn(picasso.load(R.drawable.logo)).when(mImageLoader).load(anyString());
@@ -87,11 +85,6 @@ public class MainActivityTest {
             picasso.cancelRequest((ImageView) invocation.getArguments()[0]);
             return null;
         }).when(mImageLoader).cancelRequest(any(ImageView.class));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mSystemAnimations.enableAll();
     }
 
     @Test
