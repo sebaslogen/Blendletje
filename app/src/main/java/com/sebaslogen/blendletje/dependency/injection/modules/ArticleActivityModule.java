@@ -11,11 +11,9 @@ import javax.inject.Named;
 import dagger.Module;
 import dagger.Provides;
 import rx.Scheduler;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 @Module
-public class ArticleActivityModule {
+public class ArticleActivityModule extends ActivityModule {
 
     private final ArticleActivity mArticleActivity;
     private final String mArticleId;
@@ -44,19 +42,5 @@ public class ArticleActivityModule {
     @ActivityScope
     public ArticleContract.UserActions provideArticleActivityUserActions(final ArticlePresenter articlePresenter) {
         return articlePresenter;
-    }
-
-    @Provides
-    @ActivityScope
-    @Named("io")
-    public Scheduler provideRxJavaIOScheduler() {
-        return Schedulers.io();
-    }
-
-    @Provides
-    @ActivityScope
-    @Named("ui")
-    public Scheduler getUIScheduler() {
-        return AndroidSchedulers.mainThread();
     }
 }
