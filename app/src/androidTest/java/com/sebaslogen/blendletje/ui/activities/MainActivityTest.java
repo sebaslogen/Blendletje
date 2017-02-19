@@ -119,8 +119,7 @@ public class MainActivityTest {
         // Given a list of articles is displayed
         final MainActivity mainActivity = activityTestRule.launchActivity(null);
         final List<ListItem> popularArticlesList = MockDataProvider.provideMockedDomainListOfListItem();
-        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(
-            popularArticlesList));
+        mainActivity.runOnUiThread(() -> mainActivity.displayPopularArticlesList(popularArticlesList));
         final Article article = (Article) popularArticlesList.get(0);
 
         // When I click on one

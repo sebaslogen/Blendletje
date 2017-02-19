@@ -17,8 +17,10 @@ public interface MainContract {
 
     interface UserActions {
 
-        void attachView();
+        void attachView(ViewActions viewActions);
 
         void deAttachView();
+
+        void onViewDestroyed(boolean andRecreating);
     }
 }

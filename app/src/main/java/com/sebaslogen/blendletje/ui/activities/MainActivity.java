@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.sebaslogen.blendletje.BlendletjeApp;
 import com.sebaslogen.blendletje.R;
+import com.sebaslogen.blendletje.dependency.injection.components.MainActivityComponent;
 import com.sebaslogen.blendletje.dependency.injection.modules.MainActivityModule;
 import com.sebaslogen.blendletje.domain.model.ListItem;
 import com.sebaslogen.blendletje.ui.activities.recyclerview.ItemsListAdapter;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     MainContract.UserActions mUserActions;
     @Inject
     ImageLoader mImageLoader;
+    private MainActivityComponent mComponent;
     private RecyclerView mPopularArticlesRV;
     private Toolbar mToolbar;
     private Drawable mLoadingAnimationDrawable;
@@ -52,21 +54,45 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         mLoadAnimationView = (ImageView) findViewById(R.id.iv_animation);
         mLoadingAnimationDrawable = mLoadAnimationView.getDrawable();
 
-        ((BlendletjeApp) getApplication()).getCommandsComponent()
-            .plus(new MainActivityModule(this))
-            .inject(this);
+        getActivityComponent().inject(this);
+    }
+
+    private MainActivityComponent getActivityComponent() {
+        if (null != mComponent) {
+            return mComponent;
+        }
+        final Object retainedObject = getLastCustomNonConfigurationInstance();
+        if (retainedObject != null) {
+            // we are retaining the object, so we can safely cast it to our component class.
+            mComponent = (MainActivityComponent) retainedObject;
+        } else {
+            mComponent = ((BlendletjeApp) getApplication()).getCommandsComponent()
+                .plus(new MainActivityModule(this));
+        }
+        return mComponent;
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mUserActions.attachView();
+    public Object onRetainCustomNonConfigurationInstance() {
+        return getActivityComponent();
     }
 
     @Override
-    protected void onPause() {
+    protected void onStart() {
+        super.onStart();
+        mUserActions.attachView(this);
+    }
+
+    @Override
+    protected void onStop() {
         mUserActions.deAttachView();
-        super.onPause();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mUserActions.onViewDestroyed(isChangingConfigurations());
+        super.onDestroy();
     }
 
     @Override

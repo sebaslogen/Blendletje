@@ -1,5 +1,8 @@
 package com.sebaslogen.blendletje.ui.presenters;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.sebaslogen.blendletje.domain.commands.RequestArticlesCommand;
 import com.sebaslogen.blendletje.domain.model.Advertisement;
 import com.sebaslogen.blendletje.domain.model.Article;
@@ -11,6 +14,7 @@ import java.util.Random;
 
 import javax.inject.Named;
 
+import rx.Observable;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
@@ -18,18 +22,22 @@ import timber.log.Timber;
 
 public class MainPresenter implements MainContract.UserActions {
 
-    private final MainContract.ViewActions mViewActions;
     private final Scheduler mIOScheduler;
     private final Scheduler mUIScheduler;
     private final CompositeSubscription mSubscriptions;
     private final RequestArticlesCommand.RequestArticlesCommandBuilder mRequestArticlesCommandBuilder;
-    private boolean mIsDataLoaded = false;
+    @NonNull
+    private MainContract.ViewActions mViewActions;
+    private boolean mIsViewAttached;
+    private boolean mIsDataShown = false;
+    @Nullable private Observable<List<ListItem>> mPopularArticlesObservableCache;
 
-    public MainPresenter(final MainContract.ViewActions viewActions,
+    public MainPresenter(@NonNull final MainContract.ViewActions viewActions,
                          @Named("io") final Scheduler ioScheduler,
                          @Named("ui") final Scheduler uiScheduler,
                          final RequestArticlesCommand.RequestArticlesCommandBuilder requestArticlesCommandBuilder) {
         mViewActions = viewActions;
+        mIsViewAttached = false;
         mIOScheduler = ioScheduler;
         mUIScheduler = uiScheduler;
         mSubscriptions = new CompositeSubscription();
@@ -37,8 +45,10 @@ public class MainPresenter implements MainContract.UserActions {
     }
 
     @Override
-    public void attachView() {
-        if (!mIsDataLoaded) {
+    public void attachView(final MainContract.ViewActions viewActions) {
+        mViewActions = viewActions;
+        mIsViewAttached = true;
+        if (!mIsDataShown) {
             mViewActions.showLoadingAnimation();
             loadPopularArticles();
         }
@@ -46,21 +56,44 @@ public class MainPresenter implements MainContract.UserActions {
 
     @Override
     public void deAttachView() {
-        mSubscriptions.clear(); // Unsubscribe from any ongoing subscription
+        mIsViewAttached = false;
+    }
+
+    @Override
+    public void onViewDestroyed(final boolean andRecreating) {
+        if (andRecreating) {
+            mIsDataShown = false;
+        } else {
+            mSubscriptions.clear(); // Unsubscribe from any ongoing subscription
+        }
     }
 
     private void loadPopularArticles() {
         final Subscription subscription =
-            mRequestArticlesCommandBuilder.createRequestArticlesCommand()
-                .getPopularArticles(null, null)
-                .map(this::addAdvertisements)
+            getPopularArticlesObservable()
                 .subscribeOn(mIOScheduler)
                 .observeOn(mUIScheduler)
-                .subscribe(this::showArticles, throwable -> {
+                .subscribe(articles -> {
+                    if (mIsViewAttached) {
+                        showArticles(articles);
+                    }
+                }, throwable -> {
                     // TODO: Handle error loading in UI
                     Timber.e(throwable, "Error loading list of articles");
                 });
         mSubscriptions.add(subscription);
+    }
+
+    @NonNull
+    private Observable<List<ListItem>> getPopularArticlesObservable() {
+        if (mPopularArticlesObservableCache == null) {
+            mPopularArticlesObservableCache = mRequestArticlesCommandBuilder
+                .createRequestArticlesCommand()
+                .getPopularArticles(null, null)
+                .map(this::addAdvertisements)
+                .cache();
+        }
+        return mPopularArticlesObservableCache;
     }
 
     private List<ListItem> addAdvertisements(final List<Article> articles) {
@@ -81,7 +114,7 @@ public class MainPresenter implements MainContract.UserActions {
 
     private void showArticles(final List<ListItem> items) {
         Timber.d("List of articles loaded and thrown to UI");
-        mIsDataLoaded = true;
+        mIsDataShown = true;
         mViewActions.hideLoadingAnimation();
         mViewActions.displayPopularArticlesList(items);
     }

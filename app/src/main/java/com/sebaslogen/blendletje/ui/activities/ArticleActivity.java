@@ -175,16 +175,16 @@ public class ArticleActivity extends AppCompatActivity implements ArticleContrac
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         mUserActions.attachView();
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         mImageLoader.cancelRequest(mHeaderImageView);
         mUserActions.deAttachView();
-        super.onPause();
+        super.onStop();
     }
 
     @Override
