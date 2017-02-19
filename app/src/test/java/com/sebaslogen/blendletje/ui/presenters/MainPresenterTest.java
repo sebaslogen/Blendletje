@@ -48,7 +48,7 @@ public class MainPresenterTest {
                 Schedulers.immediate(), getMockedRequestCommandBuilder()));
 
         // When the view is attached
-        presenter.attachView(viewActions);
+        presenter.attachView(mViewActions);
 
         // Then
         verify(mViewActions).displayPopularArticlesList(anyListOf(ListItem.class));
