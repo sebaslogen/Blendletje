@@ -105,7 +105,7 @@ dependencies {
 }
 
 task installTestButler(type: Exec, dependsOn: 'installDebugTest') {
-    def processBuilder = new ProcessBuilder([android.getAdbExe().toString(), 'install', '-r', 'test-butler-app-1.2.0.apk'])
+    def processBuilder = new ProcessBuilder([adb, 'install', '-r', 'test-butler-app-1.2.0.apk'])
     processBuilder.start()
 }
 
