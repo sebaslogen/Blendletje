@@ -8,14 +8,15 @@ import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 
 import java.io.IOException;
 
-import rx.Observable;
+import io.reactivex.Single;
+
 
 public interface ArticlesDataSource {
 
     PopularArticlesResource requestPopularArticles() throws IOException;
 
-    Observable<PopularArticlesResource> requestPopularArticles(@Nullable Integer amount,
-                                                               @Nullable Integer page);
+    Single<PopularArticlesResource> requestPopularArticles(@Nullable Integer amount,
+                                                           @Nullable Integer page);
 
-    Observable<ArticleResource> requestArticle(@NonNull String id);
+    Single<ArticleResource> requestArticle(@NonNull String id);
 }

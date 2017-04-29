@@ -10,11 +10,11 @@ import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
 
 import java.io.IOException;
 
+import io.reactivex.Single;
 import okhttp3.HttpUrl;
 import retrofit2.CallAdapter;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.Observable;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 /**
  * Class implementing access to data through a network API to provide
@@ -27,7 +27,7 @@ public class ArticlesServer implements ArticlesDataSource {
 
     public ArticlesServer() {
         mBaseUrl = HttpUrl.parse(BlendleAPI.END_POINT);
-        mRxAdapter = RxJavaCallAdapterFactory.create();
+        mRxAdapter = RxJava2CallAdapterFactory.create();
     }
 
     public ArticlesServer(final HttpUrl baseUrl, final CallAdapter.Factory rxAdapter) {
@@ -46,8 +46,8 @@ public class ArticlesServer implements ArticlesDataSource {
     }
 
     @Override
-    public Observable<PopularArticlesResource> requestPopularArticles(@Nullable final Integer amount,
-                                                                      @Nullable final Integer page) {
+    public Single<PopularArticlesResource> requestPopularArticles(@Nullable final Integer amount,
+                                                                 @Nullable final Integer page) {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .addConverterFactory(HALConverterFactory.create(PopularArticlesResource.class))
@@ -58,7 +58,7 @@ public class ArticlesServer implements ArticlesDataSource {
     }
 
     @Override
-    public Observable<ArticleResource> requestArticle(@NonNull final String id) {
+    public Single<ArticleResource> requestArticle(@NonNull final String id) {
         final Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .addConverterFactory(HALConverterFactory.create(ArticleResource.class))

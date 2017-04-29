@@ -3,11 +3,11 @@ package com.sebaslogen.blendletje.data.remote.apis;
 import com.sebaslogen.blendletje.data.remote.model.ArticleResource;
 import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 
+import io.reactivex.Single;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import rx.Observable;
 
 public interface BlendleAPI {
 
@@ -17,9 +17,9 @@ public interface BlendleAPI {
     Call<PopularArticlesResource> popularArticles();
 
     @GET("items/popular")
-    Observable<PopularArticlesResource> popularArticlesObservable(@Query("amount") Integer amount,
-                                                                  @Query("page") Integer page);
+    Single<PopularArticlesResource> popularArticlesObservable(@Query("amount") Integer amount,
+                                                              @Query("page") Integer page);
 
     @GET("item/{id}")
-    Observable<ArticleResource> articlesObservable(@Path("id") String id);
+    Single<ArticleResource> articlesObservable(@Path("id") String id);
 }

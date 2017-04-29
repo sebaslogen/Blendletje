@@ -11,7 +11,7 @@ import javax.inject.Named;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
-import rx.Scheduler;
+import io.reactivex.Scheduler;
 
 @Module(includes = MainActivityModule.Declarations.class)
 public class MainActivityModule extends ActivityModule {

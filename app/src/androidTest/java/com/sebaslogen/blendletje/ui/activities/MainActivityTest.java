@@ -32,10 +32,10 @@ import org.mockito.Mock;
 import java.io.IOException;
 import java.util.List;
 
+import io.reactivex.schedulers.Schedulers;
 import io.realm.RealmConfiguration;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.schedulers.Schedulers;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import utils.MockDataProvider;
 
 import static org.mockito.Matchers.any;
@@ -58,8 +58,8 @@ public class MainActivityTest {
     public DaggerMockRule<CommandsComponent> daggerRule =
         new DaggerMockRule<>(CommandsComponent.class,
             new ApplicationModule(mApp),
-            new NetworkModule("http://mock.domain", RxJavaCallAdapterFactory.
-                createWithScheduler(Schedulers.immediate())),
+            new NetworkModule("http://mock.domain", RxJava2CallAdapterFactory.
+                createWithScheduler(Schedulers.trampoline())),
             new DatabaseModule(mock(RealmConfiguration.class)),
             new CommandsModule())
             .set(mApp::setComponent);

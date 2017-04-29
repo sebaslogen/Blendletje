@@ -11,19 +11,19 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import io.reactivex.Single;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.Observable;
-import rx.schedulers.Schedulers;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import static org.mockito.Matchers.anyInt;
-import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 
 public class MainPresenterTest {
 
@@ -44,8 +44,8 @@ public class MainPresenterTest {
     @Test
     public void onCreation_ListOfArticlesIsLoaded() throws IOException {
         // Given there is a presenter
-        final MainPresenter presenter = spy(new MainPresenter(mViewActions, Schedulers.immediate(),
-                Schedulers.immediate(), getMockedRequestCommandBuilder()));
+        final MainPresenter presenter = spy(new MainPresenter(mViewActions, Schedulers.trampoline(),
+                Schedulers.trampoline(), getMockedRequestCommandBuilder()));
 
         // When the view is attached
         presenter.attachView(mViewActions);
@@ -59,10 +59,11 @@ public class MainPresenterTest {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
         final DatabaseManager databaseManager = mock(DatabaseManager.class);
-        doReturn(Observable.empty()).when(databaseManager).requestPopularArticles(anyInt(), anyInt());
+        when(databaseManager.requestPopularArticles(anyInt(), anyInt()))
+            .thenReturn(Single.error(new NullPointerException()));
 
-        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                createWithScheduler(Schedulers.immediate()));
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                createWithScheduler(Schedulers.trampoline()));
         return new RequestArticlesCommand
                 .RequestArticlesCommandBuilder(articlesServer, databaseManager);
     }

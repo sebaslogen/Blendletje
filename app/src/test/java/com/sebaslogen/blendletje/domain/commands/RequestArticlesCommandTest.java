@@ -12,13 +12,15 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.Observable;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -27,9 +29,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static utils.TestUtils.prepareAndStartServerToReturnJsonFromFile;
 
 public class RequestArticlesCommandTest {
@@ -52,22 +54,24 @@ public class RequestArticlesCommandTest {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
         final DatabaseManager databaseManager = mock(DatabaseManager.class);
-        doReturn(Observable.empty()).when(databaseManager).requestPopularArticles(anyInt(), anyInt());
+        when(databaseManager.requestPopularArticles(anyInt(), anyInt()))
+            .thenReturn(Single.error(new NullPointerException()));
 
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
-                new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                        createWithScheduler(Schedulers.immediate())),
+                new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                        createWithScheduler(Schedulers.trampoline())),
                 databaseManager);
         final Observable<List<Article>> popularArticlesObservable = command.getPopularArticles(null, null);
-        final TestSubscriber<List<Article>> testSubscriber = new TestSubscriber<>();
-        popularArticlesObservable.subscribe(testSubscriber);
+        final TestObserver<List<Article>> testObserver = new TestObserver<>();
+        popularArticlesObservable.subscribe(testObserver);
 
         // Then the request is correctly received
-        final List<List<Article>> events = testSubscriber.getOnNextEvents();
-        testSubscriber.assertNoErrors();
+        testObserver.await(2, TimeUnit.SECONDS);
+        final List<Object> events = testObserver.getEvents().get(0);
+        testObserver.assertNoErrors();
         assertTrue("There should only one event with the request results", events.size() == 1);
-        final List<Article> popularArticles = events.get(0);
+        final List<Article> popularArticles = (List<Article>) events.get(0);
         assertThat("No articles loaded", popularArticles.size(), greaterThan(0));
     }
 
@@ -77,18 +81,19 @@ public class RequestArticlesCommandTest {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "popular(ws.blendle.com_items_popular).json");
         final DatabaseManager databaseManager = mock(DatabaseManager.class);
-        doReturn(Observable.empty()).when(databaseManager).requestPopularArticles(anyInt(), anyInt());
+        when(databaseManager.requestPopularArticles(anyInt(), anyInt()))
+            .thenReturn(Single.error(new NullPointerException()));
 
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
-                new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                        createWithScheduler(Schedulers.immediate())),databaseManager);
+                new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                        createWithScheduler(Schedulers.trampoline())),databaseManager);
         final Observable<List<Article>> popularArticlesObservable = command.getPopularArticles(null, null);
-        final TestSubscriber<List<Article>> testSubscriber = new TestSubscriber<>();
-        popularArticlesObservable.subscribe(testSubscriber);
+        final TestObserver<List<Article>> testObserver = new TestObserver<>();
+        popularArticlesObservable.subscribe(testObserver);
 
         // Then the request is correctly received
-        testSubscriber.assertNoErrors();
+        testObserver.assertNoErrors();
         verify(databaseManager).storeObject(any(PopularArticlesResource.class));
     }
 
@@ -99,22 +104,24 @@ public class RequestArticlesCommandTest {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "article(ws.blendle.com_item_" + articleId + ").json");
         final DatabaseManager databaseManager = mock(DatabaseManager.class);
-        doReturn(Observable.empty()).when(databaseManager).requestArticle(anyString());
+        when(databaseManager.requestArticle(anyString()))
+            .thenReturn(Single.error(new NullPointerException()));
 
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
-                new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                        createWithScheduler(Schedulers.immediate())),
+                new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                        createWithScheduler(Schedulers.trampoline())),
                 databaseManager);
-        final Observable<Article> articleObservable = command.getArticle(articleId);
-        final TestSubscriber<Article> testSubscriber = new TestSubscriber<>();
-        articleObservable.subscribe(testSubscriber);
+        final Single<Article> articleObservable = command.getArticle(articleId);
+        final TestObserver<Article> testObserver = new TestObserver<>();
+        articleObservable.subscribe(testObserver);
 
         // Then the request is correctly received
-        final List<Article> events = testSubscriber.getOnNextEvents();
-        testSubscriber.assertNoErrors();
+        testObserver.await(2, TimeUnit.SECONDS);
+        final List<Object> events = testObserver.getEvents().get(0);
+        testObserver.assertNoErrors();
         assertTrue("There should only one event with the request results", events.size() == 1);
-        final Article article = events.get(0);
+        final Article article = (Article) events.get(0);
         assertEquals(articleId, article.id());
     }
 
@@ -125,18 +132,19 @@ public class RequestArticlesCommandTest {
         final HttpUrl baseUrl = prepareAndStartServerToReturnJsonFromFile(mServer,
                 "article(ws.blendle.com_item_" + articleId + ").json");
         final DatabaseManager databaseManager = mock(DatabaseManager.class);
-        doReturn(Observable.empty()).when(databaseManager).requestArticle(anyString());
+        when(databaseManager.requestArticle(anyString()))
+            .thenReturn(Single.error(new NullPointerException()));
 
         // When I make a request
         final RequestArticlesCommand command = new RequestArticlesCommand(
-                new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                        createWithScheduler(Schedulers.immediate())), databaseManager);
-        final Observable<Article> articleObservable = command.getArticle(articleId);
-        final TestSubscriber<Article> testSubscriber = new TestSubscriber<>();
-        articleObservable.subscribe(testSubscriber);
+                new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                        createWithScheduler(Schedulers.trampoline())), databaseManager);
+        final Single<Article> articleObservable = command.getArticle(articleId);
+        final TestObserver<Article> testObserver = new TestObserver<>();
+        articleObservable.subscribe(testObserver);
 
         // Then the request is correctly received
-        testSubscriber.assertNoErrors();
+        testObserver.assertNoErrors();
         verify(databaseManager).storeObject(any(ArticleResource.class));
     }
 

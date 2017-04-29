@@ -13,7 +13,10 @@ import com.sebaslogen.blendletje.domain.model.Article;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.exceptions.Exceptions;
+
 
 /**
  * Command class to handle article requests to different data sources
@@ -47,7 +50,7 @@ public class RequestArticlesCommand {
      */
     public Observable<List<Article>> getPopularArticles(@Nullable final Integer amount,
                                                         @Nullable final Integer page) {
-        final Observable<PopularArticlesResource>
+        final Single<PopularArticlesResource>
                 remotePopularArticlesObservable = getPopularArticlesFromRemoteAPI(amount, page);
         final Observable<PopularArticlesResource>
                 localDBPopularArticlesObservable = getPopularArticlesFromLocalDB(amount, page);
@@ -69,33 +72,39 @@ public class RequestArticlesCommand {
      * 4- Only in the case a network error stops the stream of N, then observable L will be emitted
      * unconditionally
      *
-     * @param remotePopularArticlesObservable  Remote observable to fetch results from the network
-     * @param localDBPopularArticlesObservable Local observable to fetch results from the database
+     * @param remotePopularArticlesSingle  Remote observable to fetch results from the network
+     * @param localDBPopularArticlesSingle Local observable to fetch results from the database
      * @return New observable combining both sources of information
      */
     @NonNull
     private Observable<PopularArticlesResource> getPopularArticlesFromCombinedSources(
-            final Observable<PopularArticlesResource> remotePopularArticlesObservable,
-            final Observable<PopularArticlesResource> localDBPopularArticlesObservable) {
-        return remotePopularArticlesObservable.publish(remotePopularArticles ->
+            final Single<PopularArticlesResource> remotePopularArticlesSingle,
+            final Observable<PopularArticlesResource> localDBPopularArticlesSingle) {
+        return remotePopularArticlesSingle.toObservable().publish(remotePopularArticles ->
                 Observable.merge(remotePopularArticles, // Merge network and local
-                        localDBPopularArticlesObservable // but stop local as soon as network emits
+                        localDBPopularArticlesSingle // but stop local as soon as network emits
                                 .takeUntil(remotePopularArticles)))
                 .onErrorResumeNext(throwable -> (throwable instanceof UnknownHostException) ?
-                        localDBPopularArticlesObservable : Observable.error(throwable));
+                        localDBPopularArticlesSingle : Observable.error(throwable));
     }
 
     private Observable<PopularArticlesResource> getPopularArticlesFromLocalDB(final Integer amount,
                                                                               final Integer page) {
-        return mDatabaseManager.requestPopularArticles(amount, page);
+        return mDatabaseManager.requestPopularArticles(amount, page).toObservable().onErrorResumeNext(throwable -> {
+            if (throwable instanceof NullPointerException) {
+                return Observable.empty();
+            } else {
+                throw Exceptions.propagate(throwable);
+            }
+        });
     }
 
     @NonNull
-    private Observable<PopularArticlesResource> getPopularArticlesFromRemoteAPI(
+    private Single<PopularArticlesResource> getPopularArticlesFromRemoteAPI(
             @Nullable final Integer amount, @Nullable final Integer page) {
         return mArticlesServer
                 .requestPopularArticles(amount, page)
-                .doOnNext(mDatabaseManager::storeObject);
+                .doOnSuccess(mDatabaseManager::storeObject);
     }
 
     /**
@@ -105,23 +114,29 @@ public class RequestArticlesCommand {
      * @param id Unique identifier of the requested article
      * @return An observable that will emit one article or error if not found locally neither remotely
      */
-    public Observable<Article> getArticle(@NonNull final String id) {
-        final Observable<ArticleResource> remoteArticleObservable = getArticleFromRemoteAPI(id);
+    public Single<Article> getArticle(@NonNull final String id) {
+        final Observable<ArticleResource> remoteArticleObservable = getArticleFromRemoteAPI(id).toObservable();
         final Observable<ArticleResource> localDBArticleObservable = getArticleFromLocalDB(id);
-        final Observable<ArticleResource> articleObservable = Observable
-                .concat(localDBArticleObservable, remoteArticleObservable).first();
+        final Single<ArticleResource> articleObservable = Observable
+                .concat(localDBArticleObservable, remoteArticleObservable).firstOrError();
         return articleObservable.map(ArticlesDataMapper::convertArticleToDomain);
     }
 
     private Observable<ArticleResource> getArticleFromLocalDB(@NonNull final String id) {
-        return mDatabaseManager.requestArticle(id);
+        return mDatabaseManager.requestArticle(id).toObservable().onErrorResumeNext(throwable -> {
+            if (throwable instanceof NullPointerException) {
+                return Observable.empty();
+            } else {
+                throw Exceptions.propagate(throwable);
+            }
+        });
     }
 
     @NonNull
-    private Observable<ArticleResource> getArticleFromRemoteAPI(@NonNull final String id) {
+    private Single<ArticleResource> getArticleFromRemoteAPI(@NonNull final String id) {
         return mArticlesServer
                 .requestArticle(id)
-                .doOnNext(mDatabaseManager::storeObject);
+                .doOnSuccess(mDatabaseManager::storeObject);
     }
 
     public static class RequestArticlesCommandBuilder {

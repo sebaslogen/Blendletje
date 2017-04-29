@@ -6,18 +6,18 @@ import com.sebaslogen.blendletje.domain.model.Article;
 
 import javax.inject.Named;
 
-import rx.Scheduler;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class ArticlePresenter implements ArticleContract.UserActions {
 
     private final ArticleContract.ViewActions mViewActions;
-    private String mArticleId;
+    private final String mArticleId;
     private final Scheduler mIOScheduler;
     private final Scheduler mUIScheduler;
-    private final CompositeSubscription mSubscriptions;
+    private final CompositeDisposable mSubscriptions;
     private final RequestArticlesCommand.RequestArticlesCommandBuilder
         mRequestArticlesCommandBuilder;
     private boolean mIsDataLoaded = false;
@@ -30,7 +30,7 @@ public class ArticlePresenter implements ArticleContract.UserActions {
         mArticleId = articleId;
         mIOScheduler = ioScheduler;
         mUIScheduler = uiScheduler;
-        mSubscriptions = new CompositeSubscription();
+        mSubscriptions = new CompositeDisposable();
         mRequestArticlesCommandBuilder = requestArticlesCommandBuilder;
     }
 
@@ -46,7 +46,7 @@ public class ArticlePresenter implements ArticleContract.UserActions {
     }
 
     private void loadArticle() {
-        final Subscription subscription =
+        final Disposable disposable =
             mRequestArticlesCommandBuilder.createRequestArticlesCommand()
                 .getArticle(mArticleId)
                 .subscribeOn(mIOScheduler)
@@ -55,7 +55,7 @@ public class ArticlePresenter implements ArticleContract.UserActions {
                     // TODO: Handle error loading in UI
                     Timber.e(throwable, "Error loading article with id %s", mArticleId);
                 });
-        mSubscriptions.add(subscription);
+        mSubscriptions.add(disposable);
     }
 
     private void showArticle(final Article article) {

@@ -9,13 +9,14 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Single;
+import io.reactivex.observers.TestObserver;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.HttpUrl;
 import okhttp3.mockwebserver.MockWebServer;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
-import rx.Observable;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -44,8 +45,8 @@ public class ArticlesServerTest {
                 "popular(ws.blendle.com_items_popular).json");
 
         // When I make a request
-        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                createWithScheduler(Schedulers.immediate()));
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                createWithScheduler(Schedulers.trampoline()));
         final PopularArticlesResource popularArticlesResource = articlesServer.requestPopularArticles();
 
         // Then the request is correctly received
@@ -59,18 +60,19 @@ public class ArticlesServerTest {
                 "popular(ws.blendle.com_items_popular).json");
 
         // When I make a request
-        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                createWithScheduler(Schedulers.immediate()));
-        final Observable<PopularArticlesResource> popularArticlesObservable = articlesServer
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                createWithScheduler(Schedulers.trampoline()));
+        final Single<PopularArticlesResource> popularArticlesObservable = articlesServer
                 .requestPopularArticles(null, null);
-        final TestSubscriber<PopularArticlesResource> testSubscriber = new TestSubscriber<>();
-        popularArticlesObservable.subscribe(testSubscriber);
+        final TestObserver<PopularArticlesResource> testObserver = new TestObserver<>();
+        popularArticlesObservable.subscribe(testObserver);
 
         // Then the request is correctly received
-        final List<PopularArticlesResource> events = testSubscriber.getOnNextEvents();
-        testSubscriber.assertNoErrors();
+        testObserver.await(2, TimeUnit.SECONDS);
+        final List<Object> events = testObserver.getEvents().get(0);
+        testObserver.assertNoErrors();
         assertTrue("There should only one event with the request results", events.size() == 1);
-        final PopularArticlesResource popularArticles = events.get(0);
+        final PopularArticlesResource popularArticles = (PopularArticlesResource) events.get(0);
         assertThat("No articles loaded", popularArticles.items().size(), greaterThan(0));
     }
 
@@ -82,18 +84,19 @@ public class ArticlesServerTest {
                 "article(ws.blendle.com_item_" + articleId + ").json");
 
         // When I make a request
-        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJavaCallAdapterFactory.
-                createWithScheduler(Schedulers.immediate()));
-        final Observable<ArticleResource> articleObservable = articlesServer
+        final ArticlesServer articlesServer = new ArticlesServer(baseUrl, RxJava2CallAdapterFactory.
+                createWithScheduler(Schedulers.trampoline()));
+        final Single<ArticleResource> articleObservable = articlesServer
                 .requestArticle(articleId);
-        final TestSubscriber<ArticleResource> testSubscriber = new TestSubscriber<>();
-        articleObservable.subscribe(testSubscriber);
+        final TestObserver<ArticleResource> testObserver = new TestObserver<>();
+        articleObservable.subscribe(testObserver);
 
         // Then the request is correctly received
-        final List<ArticleResource> events = testSubscriber.getOnNextEvents();
-        testSubscriber.assertNoErrors();
+        testObserver.await(2, TimeUnit.SECONDS);
+        final List<Object> events = testObserver.getEvents().get(0);
+        testObserver.assertNoErrors();
         assertTrue("There should only one event with the request results", events.size() == 1);
-        final ArticleResource article = events.get(0);
+        final ArticleResource article = (ArticleResource) events.get(0);
         assertEquals(articleId, article.id());
     }
 

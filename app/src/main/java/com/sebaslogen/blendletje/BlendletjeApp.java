@@ -13,12 +13,12 @@ import com.sebaslogen.blendletje.dependency.injection.modules.NetworkModule;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import timber.log.Timber;
 
 public class BlendletjeApp extends Application {
 
-    private static CommandsComponent mCommandsComponent;
+    private CommandsComponent mCommandsComponent;
 
     @Override
     public void onCreate() {
@@ -41,7 +41,7 @@ public class BlendletjeApp extends Application {
         mCommandsComponent = DaggerCommandsComponent.builder()
                 .applicationModule(new ApplicationModule(this))
                 .networkModule(new NetworkModule(BlendleAPI.END_POINT,
-                        RxJavaCallAdapterFactory.create()))
+                        RxJava2CallAdapterFactory.create()))
                 .databaseModule(new DatabaseModule(realmConfiguration))
                 .commandsModule(new CommandsModule())
                 .build();

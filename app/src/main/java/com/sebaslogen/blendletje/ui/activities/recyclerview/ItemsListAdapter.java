@@ -28,7 +28,8 @@ import com.sebaslogen.blendletje.ui.utils.ImageLoader;
 
 import java.util.List;
 
-import rx.functions.Func4;
+import io.reactivex.functions.Function4;
+import timber.log.Timber;
 
 import static com.sebaslogen.blendletje.ui.utils.TextUtils.getMarkupStrippedString;
 
@@ -37,7 +38,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private static final short VIEW_TYPE_ARTICLE = 0;
     private static final short VIEW_TYPE_ADVERTISEMENT = 1;
     private final ImageLoader mImageLoader;
-    private final Func4<View, String, String, String, Void> mItemClick;
+    private final Function4<View, String, String, String, Void> mItemClick;
     private final DecelerateInterpolator mDecelerateInterpolator = new DecelerateInterpolator();
     private List<ListItem> mItemsList;
     private int mLastPosition = -1; // Remember the last item shown on screen for animations
@@ -48,7 +49,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
      * @param itemsList List of items
      */
     public ItemsListAdapter(final List<ListItem> itemsList, final ImageLoader imageLoader,
-                            final Func4<View, String, String, String, Void> itemClick) {
+                            final Function4<View, String, String, String, Void> itemClick) {
         mItemsList = itemsList;
         mImageLoader = imageLoader;
         mItemClick = itemClick;
@@ -198,9 +199,15 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     }));
         }
 
-        void setClickAction(final Func4<View, String, String, String, Void> itemClick,
+        void setClickAction(final Function4<View, String, String, String, Void> itemClick,
                             final String id, final String title, @Nullable final String imageUrl) {
-            itemView.setOnClickListener(view -> itemClick.call(view, id, title, imageUrl));
+            itemView.setOnClickListener(view -> {
+                try {
+                    itemClick.apply(view, id, title, imageUrl);
+                } catch (final Exception e) {
+                    Timber.e(e);
+                }
+            });
         }
 
         void clearImage() {
@@ -234,7 +241,7 @@ public class ItemsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private final ImageView mImageView;
         private final ImageLoader mImageLoader;
 
-        public AdvertisementItemViewHolder(final View view, final ImageLoader imageLoader) {
+        AdvertisementItemViewHolder(final View view, final ImageLoader imageLoader) {
             super(view);
             mContainer = (CardView) view.findViewById(R.id.cv_ad_item_container);
             mTitle = (TextView) view.findViewById(R.id.tv_ad_title);

@@ -8,13 +8,13 @@ import com.sebaslogen.blendletje.data.remote.model.PopularArticlesResource;
 import com.sebaslogen.blendletje.data.source.ArticlesDataSource;
 
 import java.io.IOException;
+import java.util.concurrent.Callable;
 
+import io.reactivex.Single;
+import io.reactivex.exceptions.OnErrorNotImplementedException;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmResults;
-import rx.Observable;
-import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Func0;
 import timber.log.Timber;
 
 /**
@@ -27,7 +27,7 @@ public class DatabaseManager implements ArticlesDataSource {
      * This constant indicates the maximum amount of articles to store as cache in the database
      */
     private static final int MAX_ARTICLES_IN_CACHE = 100;
-    private final Func0<Realm> mDatabaseGetter;
+    private final Callable<Realm> mDatabaseGetter;
     private final RealmConfiguration mDatabaseConfig;
 
     public DatabaseManager() {
@@ -42,7 +42,7 @@ public class DatabaseManager implements ArticlesDataSource {
         mDatabaseGetter = () -> Realm.getInstance(mDatabaseConfig);
     }
 
-    public DatabaseManager(final Func0<Realm> databaseGetter, final RealmConfiguration databaseConfig) {
+    public DatabaseManager(final Callable<Realm> databaseGetter, final RealmConfiguration databaseConfig) {
         mDatabaseConfig = databaseConfig;
         mDatabaseGetter = databaseGetter;
     }
@@ -82,6 +82,8 @@ public class DatabaseManager implements ArticlesDataSource {
                 optimizeCache(realm);
                 transaction.copyToRealm(articleResource);
             });
+        } catch (final Exception e) {
+            Timber.e(e);
         }
     }
 
@@ -106,31 +108,31 @@ public class DatabaseManager implements ArticlesDataSource {
     }
 
     @Override
-    public Observable<PopularArticlesResource> requestPopularArticles(@Nullable final Integer amount,
-                                                                      @Nullable final Integer page) {
-        return Observable.fromCallable((Func0<PopularArticlesResource>) () -> {
+    public Single<PopularArticlesResource> requestPopularArticles(@Nullable final Integer amount,
+                                                                  @Nullable final Integer page) {
+        return Single.fromCallable(() -> {
             try (Realm realm = mDatabaseGetter.call()) {
-                RealmResults<PopularArticlesResource> popularArticlesResources =
+                final RealmResults<PopularArticlesResource> popularArticlesResources =
                     realm.where(PopularArticlesResource.class).findAll();
                 if (popularArticlesResources.isEmpty()) {
-                    return null; // When no results return null and filter it out at the end of this method
+                    return null; // When no results return null to make Single fail
                 }
                 return realm.copyFromRealm(popularArticlesResources).get(0); // Copy as immutable value
             }
-        }).filter(popularArticlesResource -> popularArticlesResource != null);
+        });
     }
 
     @Override
-    public Observable<ArticleResource> requestArticle(@NonNull final String id) {
-        return Observable.fromCallable((Func0<ArticleResource>) () -> {
+    public Single<ArticleResource> requestArticle(@NonNull final String id) {
+        return Single.fromCallable(() -> {
             try (Realm realm = mDatabaseGetter.call()) {
-                RealmResults<ArticleResource> articleResources = // Search and find object in DB
+                final RealmResults<ArticleResource> articleResources = // Search and find object in DB
                     realm.where(ArticleResource.class).equalTo("id", id).findAll();
                 if (articleResources.isEmpty()) {
-                    return null;
+                    return null; // When no results return null to make Single fail
                 }
                 return realm.copyFromRealm(articleResources).get(0); // Copy as immutable value
             }
-        }).filter(popularArticlesResource -> popularArticlesResource != null);
+        });
     }
 }

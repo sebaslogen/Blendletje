@@ -1,8 +1,8 @@
 package com.sebaslogen.blendletje.ui.utils;
 
 
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
+import io.reactivex.Scheduler;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Class to provide RxJava IO scheduler

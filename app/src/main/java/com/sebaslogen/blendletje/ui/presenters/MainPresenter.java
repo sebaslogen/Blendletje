@@ -14,17 +14,17 @@ import java.util.Random;
 
 import javax.inject.Named;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
 
 public class MainPresenter implements MainContract.UserActions {
 
     private final Scheduler mIOScheduler;
     private final Scheduler mUIScheduler;
-    private final CompositeSubscription mSubscriptions;
+    private final CompositeDisposable mSubscriptions;
     private final RequestArticlesCommand.RequestArticlesCommandBuilder mRequestArticlesCommandBuilder;
     @NonNull
     private MainContract.ViewActions mViewActions;
@@ -40,7 +40,7 @@ public class MainPresenter implements MainContract.UserActions {
         mIsViewAttached = false;
         mIOScheduler = ioScheduler;
         mUIScheduler = uiScheduler;
-        mSubscriptions = new CompositeSubscription();
+        mSubscriptions = new CompositeDisposable();
         mRequestArticlesCommandBuilder = requestArticlesCommandBuilder;
     }
 
@@ -69,7 +69,7 @@ public class MainPresenter implements MainContract.UserActions {
     }
 
     private void loadPopularArticles() {
-        final Subscription subscription =
+        final Disposable disposable =
             getPopularArticlesObservable()
                 .subscribeOn(mIOScheduler)
                 .observeOn(mUIScheduler)
@@ -81,7 +81,7 @@ public class MainPresenter implements MainContract.UserActions {
                     // TODO: Handle error loading in UI
                     Timber.e(throwable, "Error loading list of articles");
                 });
-        mSubscriptions.add(subscription);
+        mSubscriptions.add(disposable);
     }
 
     @NonNull
@@ -99,7 +99,7 @@ public class MainPresenter implements MainContract.UserActions {
     private List<ListItem> addAdvertisements(final List<Article> articles) {
         final List<ListItem> items = new ArrayList<>(articles.size());
         try { // Fake delay caused by loading advertisements
-            Thread.sleep(700 + (new Random()).nextInt(1000));
+            Thread.sleep(((long) 700) + (new Random()).nextInt(1000));
         } catch (final InterruptedException ignored) {
         }
         final Random randomGenerator = new Random();
