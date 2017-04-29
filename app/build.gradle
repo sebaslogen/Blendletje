@@ -73,7 +73,7 @@ dependencies {
     testCompile "junit:junit:${config.getAt("junit")}"
     testCompile "org.mockito:mockito-core:${config.getAt("mockito")}"
     testCompile "org.hamcrest:hamcrest-library:${config.getAt("hamcrest")}"
-    testCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
+    testCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("okhttp")}"
 
     androidTestCompile "org.mockito:mockito-core:${config.getAt("mockito")}"
     androidTestCompile "com.github.crittercism.dexmaker:dexmaker:${config.getAt("dexmaker")}"
@@ -81,7 +81,7 @@ dependencies {
     androidTestCompile "com.github.crittercism.dexmaker:dexmaker-dx:${config.getAt("dexmaker")}"
     androidTestCompile "org.hamcrest:hamcrest-library:${config.getAt("hamcrest")}"
     androidTestCompile "org.hamcrest:hamcrest-core:${config.getAt("hamcrest")}"
-    androidTestCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("mockwebserver")}"
+    androidTestCompile "com.squareup.okhttp3:mockwebserver:${config.getAt("okhttp")}"
     androidTestCompile "com.github.fabioCollini:DaggerMock:${config.getAt("daggermock")}"
     androidTestCompile "com.linkedin.testbutler:test-butler-library:${config.getAt("test_butler")}"
     //Espresso dependencies
