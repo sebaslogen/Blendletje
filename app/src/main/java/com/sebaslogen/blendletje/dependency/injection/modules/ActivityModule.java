@@ -16,14 +16,14 @@ public class ActivityModule {
     @Provides
     @ActivityScope
     @Named("io")
-    public Scheduler provideRxJavaIOScheduler() {
+    public static Scheduler provideRxJavaIOScheduler() {
         return Schedulers.io();
     }
 
     @Provides
     @ActivityScope
     @Named("ui")
-    public Scheduler getUIScheduler() {
+    public static Scheduler getUIScheduler() {
         return AndroidSchedulers.mainThread();
     }
 }

@@ -14,7 +14,7 @@ public class CommandsModule {
 
     @Provides
     @Singleton
-    public RequestArticlesCommand.RequestArticlesCommandBuilder providesRequestArticlesCommandBuilder(
+    public static RequestArticlesCommand.RequestArticlesCommandBuilder providesRequestArticlesCommandBuilder(
             final ArticlesServer articlesServer, final DatabaseManager databaseManager) {
         return new RequestArticlesCommand.RequestArticlesCommandBuilder(articlesServer, databaseManager);
     }

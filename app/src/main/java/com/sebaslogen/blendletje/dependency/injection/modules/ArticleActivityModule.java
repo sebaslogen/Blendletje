@@ -8,11 +8,12 @@ import com.sebaslogen.blendletje.ui.presenters.ArticlePresenter;
 
 import javax.inject.Named;
 
+import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
 import rx.Scheduler;
 
-@Module
+@Module(includes = ArticleActivityModule.Declarations.class)
 public class ArticleActivityModule extends ActivityModule {
 
     private final ArticleActivity mArticleActivity;
@@ -38,9 +39,10 @@ public class ArticleActivityModule extends ActivityModule {
             requestArticlesCommandBuilder);
     }
 
-    @Provides
-    @ActivityScope
-    public ArticleContract.UserActions provideArticleActivityUserActions(final ArticlePresenter articlePresenter) {
-        return articlePresenter;
+    @Module
+    public interface Declarations {
+        @Binds
+        @ActivityScope
+        public abstract ArticleContract.UserActions provideArticleActivityUserActions(final ArticlePresenter articlePresenter);
     }
 }
